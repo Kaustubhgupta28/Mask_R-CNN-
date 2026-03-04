@@ -97,36 +97,44 @@ div[data-testid="stSlider"] div[role="slider"] {
 
 /* ── GLASS HEADER ────────────────────────────────────────── */
 .glass-header {
-    background: rgba(255, 255, 255, 0.35);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: linear-gradient(135deg,
+        rgba(255, 240, 252, 0.85) 0%,
+        rgba(248, 235, 255, 0.85) 50%,
+        rgba(235, 240, 255, 0.85) 100%);
+    border: 1.5px solid rgba(220, 180, 255, 0.6);
     border-radius: 24px;
     padding: 32px 40px;
     margin-bottom: 24px;
     box-shadow:
-        0 8px 32px rgba(192, 100, 220, 0.12),
-        0 2px 8px rgba(255, 255, 255, 0.8) inset;
+        0 8px 32px rgba(168, 85, 247, 0.15),
+        0 2px 12px rgba(255, 255, 255, 0.9) inset,
+        0 -1px 0px rgba(220, 180, 255, 0.4) inset;
     position: relative;
     overflow: hidden;
 }
 
-/* Glow orbs behind glass */
+/* Pink glow top-left */
 .glass-header::before {
     content: '';
     position: absolute;
-    top: -40px; left: -40px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(232, 121, 249, 0.25), transparent 70%);
+    top: -30px; left: -30px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle,
+        rgba(232, 121, 249, 0.3) 0%,
+        transparent 70%);
     border-radius: 50%;
     pointer-events: none;
 }
+
+/* Blue glow bottom-right */
 .glass-header::after {
     content: '';
     position: absolute;
-    bottom: -40px; right: -40px;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(129, 140, 248, 0.2), transparent 70%);
+    bottom: -30px; right: -30px;
+    width: 180px; height: 180px;
+    background: radial-gradient(circle,
+        rgba(129, 140, 248, 0.25) 0%,
+        transparent 70%);
     border-radius: 50%;
     pointer-events: none;
 }
