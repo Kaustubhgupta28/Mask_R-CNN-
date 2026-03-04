@@ -45,13 +45,13 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 div[data-testid="stTabs"] button { background: #ffe0ef !important; border-radius: 10px 10px 0 0 !important; color: #c2185b !important; font-weight: 600 !important; }
 div[data-testid="stTabs"] button[aria-selected="true"] { background: linear-gradient(135deg, #f48fb1, #f06292) !important; color: white !important; }
-div[data-testid="stFileUploader"] { background: #ffe8f0 !important; border: 2px dashed #f48fb1 !important; border-radius: 14px !important; }
-div[data-testid="stExpander"] { background: #ffe8f0 !important; border: 1px solid #f48fb1 !important; border-radius: 12px !important; }
+div[data-testid="stFileUploader"] { background: #f3f4f6 !important; border: 2px dashed #d1d5db !important; border-radius: 14px !important; }
+div[data-testid="stExpander"] { background: #f3f4f6 !important; border: 1px solid #e5e7eb !important; border-radius: 12px !important; }
 div[data-testid="stSelectbox"] > div > div { background: #ffe0ef !important; border: 1.5px solid #f48fb1 !important; border-radius: 10px !important; }
 .metric-card { background: #fff0f5; border-radius: 16px; padding: 20px 24px; border: 1px solid #f48fb1; box-shadow: 0 4px 15px rgba(244,143,177,0.2); text-align: center; margin: 6px 0; }
 .metric-val { font-size: 2rem; font-weight: 800; color: #c2185b; line-height: 1.2; }
 .metric-lbl { font-size: 0.78rem; color: #e91e8c; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-.glass-header { background: rgba(255,240,248,0.9); border: 1.5px solid rgba(244,143,177,0.5); border-radius: 24px; padding: 32px 40px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(244,143,177,0.2), 0 2px 12px rgba(255,255,255,0.9) inset; position: relative; overflow: hidden; }
+.glass-header { background: #f3f4f6; border: 1.5px solid #e5e7eb; border-radius: 24px; padding: 32px 40px; margin-bottom: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); position: relative; overflow: hidden; }
 .glass-header::before { content: ''; position: absolute; top: -30px; left: -30px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(244,143,177,0.3) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
 .glass-header::after { content: ''; position: absolute; bottom: -30px; right: -30px; width: 180px; height: 180px; background: radial-gradient(circle, rgba(240,98,146,0.2) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
 .main-title { font-size: 2.8rem; font-weight: 900; background: linear-gradient(135deg, #f06292 0%, #e91e63 50%, #c2185b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; line-height: 1.2; }
