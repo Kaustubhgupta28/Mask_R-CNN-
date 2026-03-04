@@ -1,0 +1,177 @@
+/* ═══════════════════════════════════════════════════════════════
+   styles.css — Sirf Design / Colors / Fonts
+   Isme hai: Background, Sidebar, Cards, Tabs, Buttons styling
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+/* ── GLOBAL FONT ─────────────────────────────────────────── */
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── MAIN PAGE BACKGROUND ────────────────────────────────── */
+/* 🌸 Pink & Purple Light Theme */
+.stApp {
+    background: linear-gradient(160deg,
+        #fff0f8 0%,
+        #f8f0ff 40%,
+        #f0f4ff 100%) !important;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg,
+        #ffe4f3 0%,
+        #f3e4ff 100%) !important;
+    border-right: 1.5px solid #f0b8dc !important;
+}
+
+/* ── TABS ────────────────────────────────────────────────── */
+div[data-testid="stTabs"] button {
+    background: #fff0fb !important;
+    border-radius: 10px 10px 0 0 !important;
+    color: #9d4edd !important;
+    font-weight: 600 !important;
+}
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    background: linear-gradient(135deg, #f9a8d4, #c084fc) !important;
+    color: white !important;
+}
+
+/* ── FILE UPLOADER ───────────────────────────────────────── */
+div[data-testid="stFileUploader"] {
+    background: #fff5fb !important;
+    border: 2px dashed #f0abde !important;
+    border-radius: 14px !important;
+}
+
+/* ── EXPANDERS ───────────────────────────────────────────── */
+div[data-testid="stExpander"] {
+    background: #fff8fd !important;
+    border: 1px solid #f0c8e8 !important;
+    border-radius: 12px !important;
+}
+
+/* ── SELECTBOX ───────────────────────────────────────────── */
+div[data-testid="stSelectbox"] > div > div {
+    background: #fff5fb !important;
+    border: 1.5px solid #f0abde !important;
+    border-radius: 10px !important;
+}
+
+/* ── SLIDERS ─────────────────────────────────────────────── */
+div[data-testid="stSlider"] div[role="slider"] {
+    background: linear-gradient(135deg, #f9a8d4, #c084fc) !important;
+}
+
+/* ── METRIC CARDS ────────────────────────────────────────── */
+.metric-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 24px;
+    border: 1px solid #f0c8e8;
+    box-shadow: 0 4px 15px rgba(192, 100, 200, 0.1);
+    text-align: center;
+    margin: 6px 0;
+    transition: transform 0.2s;
+}
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(192, 100, 200, 0.15);
+}
+.metric-val {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #9d4edd;
+    line-height: 1.2;
+}
+.metric-lbl {
+    font-size: 0.78rem;
+    color: #c084c0;
+    margin-top: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ── MAIN TITLE ──────────────────────────────────────────── */
+.main-title {
+    font-size: 2.6rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #e879f9 0%, #a855f7 50%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+.subtitle {
+    color: #a78bba;
+    font-size: 1rem;
+    margin-top: 6px;
+}
+
+/* ── INFO BOXES ──────────────────────────────────────────── */
+.info-box {
+    background: linear-gradient(135deg, #fdf4ff, #f5f0ff);
+    border-left: 4px solid #c084fc;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    color: #4a3060;
+    margin: 10px 0;
+}
+.cloud-box {
+    background: linear-gradient(135deg, #fdf4ff, #f0f4ff);
+    border: 2px solid #c084fc;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin: 10px 0;
+}
+.local-box {
+    background: linear-gradient(135deg, #fff0f8, #f5f0ff);
+    border: 2px dashed #e879f9;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* ── LIVE BADGE ──────────────────────────────────────────── */
+.live-badge {
+    display: inline-block;
+    background: #ef4444;
+    color: white;
+    border-radius: 999px;
+    padding: 3px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    animation: blink 1.2s ease-in-out infinite;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+}
+
+/* ── CLASS TAGS ──────────────────────────────────────────── */
+.tag {
+    display: inline-block;
+    background: #fdf4ff;
+    color: #9d4edd;
+    border: 1px solid #e9d5ff;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin: 2px;
+}
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.footer {
+    text-align: center;
+    color: #c084c0;
+    font-size: 0.8rem;
+    padding: 20px 0;
+}
