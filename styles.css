@@ -95,20 +95,59 @@ div[data-testid="stSlider"] div[role="slider"] {
     letter-spacing: 0.05em;
 }
 
+/* ── GLASS HEADER ────────────────────────────────────────── */
+.glass-header {
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 24px;
+    padding: 32px 40px;
+    margin-bottom: 24px;
+    box-shadow:
+        0 8px 32px rgba(192, 100, 220, 0.12),
+        0 2px 8px rgba(255, 255, 255, 0.8) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Glow orbs behind glass */
+.glass-header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(232, 121, 249, 0.25), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.glass-header::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.2), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
 /* ── MAIN TITLE ──────────────────────────────────────────── */
 .main-title {
-    font-size: 2.6rem;
+    font-size: 2.8rem;
     font-weight: 900;
     background: linear-gradient(135deg, #e879f9 0%, #a855f7 50%, #818cf8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 0;
     line-height: 1.2;
+    letter-spacing: -0.02em;
 }
 .subtitle {
     color: #a78bba;
     font-size: 1rem;
-    margin-top: 6px;
+    margin-top: 8px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
 }
 
 /* ── INFO BOXES ──────────────────────────────────────────── */
