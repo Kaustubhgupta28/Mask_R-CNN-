@@ -256,7 +256,7 @@ if pil_image is not None:
             st.markdown(
                 f"`[{i+1:02d}]` **{name}** — "
                 f"score: `{score:.3f}` — "
-                f"box: `({x1},{y1}) → ({x2},{y2})`"
+                f"box: `({x1},{y1}) to ({x2},{y2})`"
             )
 
     # Download button
