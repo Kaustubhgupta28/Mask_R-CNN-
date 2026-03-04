@@ -142,17 +142,49 @@ def show_result_details(results, n_det, score_thr):
             plt.close()
 
 # ─────────────────────────────────────────────────────────────
-# HEADER
+# HEADER — Glass Morphism
 # ─────────────────────────────────────────────────────────────
-st.markdown('<p class="main-title">🎭 Mask R-CNN Instance Segmentation</p>',
-            unsafe_allow_html=True)
-st.markdown('<p class="subtitle">ResNet-50 FPN &nbsp;·&nbsp; MS-COCO 2017 &nbsp;·&nbsp; 80 categories &nbsp;·&nbsp; Image + Webcam</p>',
-            unsafe_allow_html=True)
+env_icon  = "🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
+env_color = "#16a34a"       if RUNNING_LOCAL else "#7c3aed"
 
-if RUNNING_LOCAL:
-    st.success("🖥️ Local mode — Webcam Live Video available!")
-else:
-    st.info("☁️ Cloud mode — Webcam Photo mode available! Live Video ke liye local pe chalao.")
+st.markdown(f"""
+<div class="glass-header">
+    <p class="main-title">🎭 Mask R-CNN</p>
+    <p class="main-title" style="font-size:1.6rem; margin-top:-8px;">
+        Instance Segmentation
+    </p>
+    <p class="subtitle">
+        ResNet-50 FPN &nbsp;·&nbsp; MS-COCO 2017 Pretrained
+        &nbsp;·&nbsp; 80 Object Categories &nbsp;·&nbsp; Image + Webcam
+    </p>
+    <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <span style="background: rgba(168,85,247,0.15); color: #7c3aed;
+                     border: 1px solid rgba(168,85,247,0.3);
+                     border-radius: 999px; padding: 4px 14px;
+                     font-size: 0.78rem; font-weight: 700;">
+            🧠 ResNet-50 FPN
+        </span>
+        <span style="background: rgba(236,72,153,0.12); color: #be185d;
+                     border: 1px solid rgba(236,72,153,0.25);
+                     border-radius: 999px; padding: 4px 14px;
+                     font-size: 0.78rem; font-weight: 700;">
+            📦 MS-COCO 2017
+        </span>
+        <span style="background: rgba(129,140,248,0.15); color: #4338ca;
+                     border: 1px solid rgba(129,140,248,0.3);
+                     border-radius: 999px; padding: 4px 14px;
+                     font-size: 0.78rem; font-weight: 700;">
+            🏷️ 80 Categories
+        </span>
+        <span style="background: rgba(34,197,94,0.12); color: {env_color};
+                     border: 1px solid rgba(34,197,94,0.25);
+                     border-radius: 999px; padding: 4px 14px;
+                     font-size: 0.78rem; font-weight: 700;">
+            {env_icon}
+        </span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 st.markdown("---")
 
