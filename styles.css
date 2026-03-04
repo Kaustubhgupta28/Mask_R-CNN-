@@ -11,20 +11,15 @@ html, body, [class*="css"] {
 }
 
 /* ── MAIN PAGE BACKGROUND ────────────────────────────────── */
-/* 🌸 Pink & Purple Light Theme */
+/* 🌸 Pure Baby Pink Theme */
 .stApp {
-    background: linear-gradient(160deg,
-        #fff0f8 0%,
-        #f8f0ff 40%,
-        #f0f4ff 100%) !important;
+    background: #ffd6e7 !important;
 }
 
 /* ── SIDEBAR ─────────────────────────────────────────────── */
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg,
-        #ffe4f3 0%,
-        #f3e4ff 100%) !important;
-    border-right: 1.5px solid #f0b8dc !important;
+    background: #ffb3cc !important;
+    border-right: 1.5px solid #ff85b3 !important;
 }
 
 /* ── TABS ────────────────────────────────────────────────── */
