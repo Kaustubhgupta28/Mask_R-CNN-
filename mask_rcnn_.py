@@ -15,8 +15,8 @@ import requests
 from io import BytesIO
 import os
 import time
+import platform
 import pandas as pd
-import threading
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -31,12 +31,34 @@ st.set_page_config(
 )
 
 # ─────────────────────────────────────────────────────────────────────────────
+# DETECT IF RUNNING LOCAL OR CLOUD
+# ─────────────────────────────────────────────────────────────────────────────
+def is_local():
+    """Check karo local pe chal raha hai ya cloud pe"""
+    try:
+        # Streamlit Cloud pe yeh environment variable hoti hai
+        if os.environ.get("STREAMLIT_SHARING_MODE"):
+            return False
+        if os.environ.get("IS_CLOUD"):
+            return False
+        # Try to open webcam — agar khule toh local
+        cap = cv2.VideoCapture(0)
+        if cap.isOpened():
+            cap.release()
+            return True
+        cap.release()
+        return False
+    except:
+        return False
+
+RUNNING_LOCAL = is_local()
+
+# ─────────────────────────────────────────────────────────────────────────────
 # CUSTOM CSS
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
 .main-title {
@@ -45,19 +67,17 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     margin-bottom: 0; line-height: 1.2;
 }
-.subtitle {
-    color: #888; font-size: 1rem; margin-top: 6px; margin-bottom: 0;
-}
+.subtitle { color: #888; font-size: 1rem; margin-top: 6px; }
+
 .metric-card {
     background: white; border-radius: 16px;
     padding: 20px 24px; border: 1px solid #e5e7eb;
     box-shadow: 0 4px 15px rgba(0,0,0,0.07);
     text-align: center; margin: 6px 0;
-    transition: transform 0.2s;
 }
-.metric-card:hover { transform: translateY(-2px); }
 .metric-val { font-size: 2rem; font-weight: 800; color: #764ba2; line-height: 1.2; }
-.metric-lbl { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.metric-lbl { font-size: 0.78rem; color: #9ca3af; margin-top: 4px; font-weight: 600;
+              text-transform: uppercase; letter-spacing: 0.05em; }
 
 .info-box {
     background: linear-gradient(135deg, #f0f4ff, #f5f0ff);
@@ -65,41 +85,45 @@ html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
     border-radius: 10px; padding: 14px 18px;
     font-size: 0.88rem; color: #333; margin: 10px 0;
 }
-.webcam-box {
+.warn-box {
+    background: #fffbeb; border-left: 4px solid #f59e0b;
+    border-radius: 10px; padding: 14px 18px;
+    font-size: 0.88rem; color: #333; margin: 10px 0;
+}
+.cloud-box {
+    background: linear-gradient(135deg, #f0fff4, #f0f4ff);
+    border: 2px solid #667eea; border-radius: 16px;
+    padding: 30px; text-align: center; margin: 10px 0;
+}
+.local-box {
     background: linear-gradient(135deg, #fff0f8, #f0f8ff);
-    border: 2px dashed #764ba2;
-    border-radius: 16px; padding: 20px;
-    text-align: center; margin: 10px 0;
+    border: 2px dashed #764ba2; border-radius: 16px;
+    padding: 20px; text-align: center; margin: 10px 0;
 }
 .live-badge {
-    display: inline-block;
-    background: #ef4444; color: white;
-    border-radius: 999px; padding: 3px 12px;
+    display: inline-block; background: #ef4444; color: white;
+    border-radius: 999px; padding: 3px 14px;
     font-size: 0.75rem; font-weight: 700;
-    letter-spacing: 0.08em; margin-left: 8px;
-    animation: pulse 1.5s ease-in-out infinite;
+    letter-spacing: 0.08em;
+    animation: blink 1.2s ease-in-out infinite;
 }
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-}
-.section-header {
-    font-size: 1.2rem; font-weight: 800;
-    color: #374151; margin: 20px 0 10px 0;
-    display: flex; align-items: center; gap: 8px;
-}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
 .tag {
     display: inline-block; background: #f3f0ff;
     color: #764ba2; border-radius: 6px;
     padding: 2px 10px; font-size: 0.78rem;
     font-weight: 600; margin: 2px;
 }
-.footer {
-    text-align: center; color: #aaa;
-    font-size: 0.8rem; padding: 20px 0;
+.section-header {
+    font-size: 1.2rem; font-weight: 800; color: #374151;
+    margin: 20px 0 10px 0;
 }
-div[data-testid="stTabs"] button {
-    font-weight: 600 !important;
+.footer { text-align:center; color:#aaa; font-size:0.8rem; padding:20px 0; }
+.step-box {
+    background: #f9fafb; border-radius: 12px;
+    padding: 16px; border: 1px solid #e5e7eb;
+    margin: 8px 0;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -216,14 +240,14 @@ def draw_results(pil_image, results,
     return final, N
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SHOW RESULTS (charts + table) — reusable function
+# RESULT DETAILS (reusable)
 # ─────────────────────────────────────────────────────────────────────────────
 def show_result_details(results, n_det, score_thr):
     if n_det == 0:
-        st.warning("⚠️ Koi object detect nahi hua. Confidence Threshold kam karo.")
+        st.warning("⚠️ Koi object detect nahi hua. Sidebar mein Confidence Threshold kam karo.")
         return
 
-    # Metrics
+    # 4 metric cards
     mc1, mc2, mc3, mc4 = st.columns(4)
     mc1.markdown(f'<div class="metric-card"><div class="metric-val">{n_det}</div><div class="metric-lbl">Objects Detected</div></div>', unsafe_allow_html=True)
     mc2.markdown(f'<div class="metric-card"><div class="metric-val">{results["time"]*1000:.0f}ms</div><div class="metric-lbl">Inference Time</div></div>', unsafe_allow_html=True)
@@ -232,8 +256,8 @@ def show_result_details(results, n_det, score_thr):
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Detection Table
-    st.markdown('<div class="section-header">📋 Detection Details</div>', unsafe_allow_html=True)
+    # Detection table
+    st.markdown("#### 📋 Detection Details")
     rows = []
     for i in range(n_det):
         lid   = int(results['labels'][i])
@@ -248,41 +272,37 @@ def show_result_details(results, n_det, score_thr):
             "Height px": int(box[3]-box[1]),
             "Box [x1,y1,x2,y2]": f"[{box[0]},{box[1]},{box[2]},{box[3]}]"
         })
-    df = pd.DataFrame(rows)
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-    # Charts side by side
+    # Charts
     ch1, ch2 = st.columns(2)
 
-    # Chart 1 — Class distribution
     with ch1:
-        st.markdown('<div class="section-header">📊 Class Distribution</div>', unsafe_allow_html=True)
+        st.markdown("#### 📊 Class Distribution")
         class_counts = {}
         for i in range(n_det):
             name = COCO_CLASSES.get(int(results['labels'][i]), '?')
             class_counts[name] = class_counts.get(name, 0) + 1
         fig, ax = plt.subplots(figsize=(5, 3.5))
         bars = ax.bar(class_counts.keys(), class_counts.values(),
-                      color='#764ba2', edgecolor='white', linewidth=0.8)
+                      color='#764ba2', edgecolor='white')
         for bar, val in zip(bars, class_counts.values()):
             ax.text(bar.get_x()+bar.get_width()/2,
                     bar.get_height()+0.05, str(val),
-                    ha='center', va='bottom', fontweight='bold', fontsize=10)
+                    ha='center', va='bottom', fontweight='bold')
         ax.set_ylabel("Count")
         ax.set_title("Instances per Class", fontweight='bold')
         ax.set_ylim(0, max(class_counts.values())+1.5)
         plt.xticks(rotation=30, ha='right', fontsize=9)
         plt.tight_layout()
-        st.pyplot(fig)
-        plt.close()
+        st.pyplot(fig); plt.close()
 
-    # Chart 2 — Confidence scores
     with ch2:
         if n_det > 1:
-            st.markdown('<div class="section-header">📉 Confidence Scores</div>', unsafe_allow_html=True)
-            scores_list  = results['scores'].tolist()
-            labels_list  = [COCO_CLASSES.get(int(l),'?') for l in results['labels']]
-            colors_bar   = [f'#{COLORS[i%len(COLORS)][0]:02x}{COLORS[i%len(COLORS)][1]:02x}{COLORS[i%len(COLORS)][2]:02x}' for i in range(n_det)]
+            st.markdown("#### 📉 Confidence Scores")
+            scores_list = results['scores'].tolist()
+            labels_list = [COCO_CLASSES.get(int(l),'?') for l in results['labels']]
+            colors_bar  = [f'#{COLORS[i%len(COLORS)][0]:02x}{COLORS[i%len(COLORS)][1]:02x}{COLORS[i%len(COLORS)][2]:02x}' for i in range(n_det)]
             fig2, ax2 = plt.subplots(figsize=(5, 3.5))
             ax2.barh(range(n_det), scores_list, color=colors_bar, edgecolor='white')
             ax2.set_yticks(range(n_det))
@@ -293,90 +313,87 @@ def show_result_details(results, n_det, score_thr):
             ax2.legend(fontsize=8)
             ax2.set_title("Per-Instance Confidence", fontweight='bold')
             plt.tight_layout()
-            st.pyplot(fig2)
-            plt.close()
+            st.pyplot(fig2); plt.close()
 
 # ─────────────────────────────────────────────────────────────────────────────
 # HEADER
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown('<p class="main-title">🎭 Mask R-CNN Instance Segmentation</p>', unsafe_allow_html=True)
-st.markdown('<p class="subtitle">ResNet-50 FPN backbone &nbsp;·&nbsp; MS-COCO 2017 pretrained &nbsp;·&nbsp; 80 object categories &nbsp;·&nbsp; Image + Webcam support</p>', unsafe_allow_html=True)
+st.markdown('<p class="subtitle">ResNet-50 FPN &nbsp;·&nbsp; MS-COCO 2017 &nbsp;·&nbsp; 80 categories &nbsp;·&nbsp; Image + Webcam</p>', unsafe_allow_html=True)
+
+# Environment badge
+if RUNNING_LOCAL:
+    st.success("🖥️ Local mode — Webcam Live Video available!")
+else:
+    st.info("☁️ Cloud mode — Webcam Photo mode available! Live Video ke liye local pe chalao.")
+
 st.markdown("---")
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("## ⚙️ Detection Settings")
-
-    score_thr = st.slider("🎯 Confidence Threshold", 0.10, 0.95, 0.50, 0.05,
-        help="Kitna confident hona chahiye model — low = zyada detections")
-    mask_thr  = st.slider("🎨 Mask Threshold",       0.10, 0.90, 0.50, 0.05,
-        help="Mask ke pixels ka cutoff")
-    alpha     = st.slider("🌫️ Mask Transparency",    0.10, 0.90, 0.45, 0.05,
-        help="Mask kitna transparent ho")
+    st.markdown("## ⚙️ Settings")
+    score_thr = st.slider("🎯 Confidence Threshold", 0.10, 0.95, 0.50, 0.05)
+    mask_thr  = st.slider("🎨 Mask Threshold",       0.10, 0.90, 0.50, 0.05)
+    alpha     = st.slider("🌫️ Mask Transparency",    0.10, 0.90, 0.45, 0.05)
 
     st.markdown("---")
-    st.markdown("## 👁️ Display Options")
-    show_masks  = st.checkbox("Show Segmentation Masks", value=True)
-    show_boxes  = st.checkbox("Show Bounding Boxes",     value=True)
-    show_labels = st.checkbox("Show Class Labels",       value=True)
+    st.markdown("## 👁️ Display")
+    show_masks  = st.checkbox("Show Masks",        value=True)
+    show_boxes  = st.checkbox("Show Boxes",        value=True)
+    show_labels = st.checkbox("Show Labels",       value=True)
 
     st.markdown("---")
-    st.markdown("## 🖥️ System Info")
+    st.markdown("## 🖥️ System")
     st.markdown(f"**Device:** `{str(device).upper()}`")
     st.markdown(f"**PyTorch:** `{torch.__version__}`")
-    st.markdown(f"**Classes:** `{len(COCO_CLASSES)}` COCO")
+    env_text = "🖥️ Local" if RUNNING_LOCAL else "☁️ Cloud"
+    st.markdown(f"**Mode:** {env_text}")
     if torch.cuda.is_available():
         st.success(f"GPU: {torch.cuda.get_device_name(0)}")
     else:
-        st.info("Running on CPU")
+        st.info("CPU mode")
 
 # ─────────────────────────────────────────────────────────────────────────────
-# MAIN TABS — 4 input modes
+# TABS
 # ─────────────────────────────────────────────────────────────────────────────
-st.markdown('<div class="section-header">📥 Step 1 — Choose Input Source</div>', unsafe_allow_html=True)
+st.markdown("### 📥 Input Source Choose Karo")
 
 tab1, tab2, tab3, tab4 = st.tabs([
     "📁 Upload Image",
     "🔗 Image URL",
     "🖼️ Sample Images",
-    "📷 Webcam"
+    "📷 Webcam",
 ])
 
 pil_image = None
 
-# ── TAB 1: File Upload ────────────────────────────────────────────────────────
+# ── TAB 1: Upload ─────────────────────────────────────────────────────────────
 with tab1:
-    uploaded = st.file_uploader(
-        "Koi bhi JPG ya PNG image upload karo",
-        type=["jpg","jpeg","png"],
-        help="Street scene, animals, kitchen, sports — kuch bhi!"
-    )
+    uploaded = st.file_uploader("JPG / PNG upload karo", type=["jpg","jpeg","png"])
     if uploaded:
         pil_image = Image.open(uploaded).convert("RGB")
-        st.success(f"✅ Image load ho gayi: {uploaded.name} ({pil_image.size[0]}×{pil_image.size[1]}px)")
-        st.image(pil_image, caption="Uploaded Image", use_container_width=True)
+        st.success(f"✅ {uploaded.name} load ho gayi ({pil_image.size[0]}×{pil_image.size[1]}px)")
+        st.image(pil_image, use_container_width=True)
 
 # ── TAB 2: URL ────────────────────────────────────────────────────────────────
 with tab2:
-    url = st.text_input("Image URL yahan paste karo:",
-        placeholder="https://example.com/photo.jpg")
+    url = st.text_input("Image URL paste karo:", placeholder="https://example.com/photo.jpg")
     if url:
         try:
-            with st.spinner("Downloading image..."):
+            with st.spinner("Downloading..."):
                 r = requests.get(url, timeout=10)
                 pil_image = Image.open(BytesIO(r.content)).convert("RGB")
             st.success(f"✅ Downloaded! ({pil_image.size[0]}×{pil_image.size[1]}px)")
             st.image(pil_image, use_container_width=True)
         except Exception as e:
-            st.error(f"❌ Image load nahi hui: {e}")
+            st.error(f"❌ Load nahi hui: {e}")
 
-# ── TAB 3: Sample Images ──────────────────────────────────────────────────────
+# ── TAB 3: Sample ─────────────────────────────────────────────────────────────
 with tab3:
-    st.markdown("Neeche se koi sample image choose karo:")
-    choice = st.selectbox("Sample image:", list(SAMPLE_IMAGES.keys()))
-    if st.button("📥 Load Sample Image", use_container_width=True):
+    choice = st.selectbox("Sample choose karo:", list(SAMPLE_IMAGES.keys()))
+    if st.button("📥 Load Sample", use_container_width=True):
         try:
             with st.spinner("Loading..."):
                 r = requests.get(SAMPLE_IMAGES[choice], timeout=10)
@@ -388,46 +405,34 @@ with tab3:
 
 # ── TAB 4: WEBCAM ─────────────────────────────────────────────────────────────
 with tab4:
-    st.markdown("""
-    <div class="webcam-box">
-        <h3>📷 Webcam Detection</h3>
-        <p>Do modes available hain:</p>
-        <p>
-            <span class="tag">📸 Single Photo Mode</span> — Cloud + Local dono pe kaam karta hai<br><br>
-            <span class="tag">🎥 Live Video Mode</span> — Sirf Local pe kaam karta hai
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
 
-    webcam_mode = st.radio(
-        "Webcam mode choose karo:",
-        ["📸 Single Photo (Cloud + Local)", "🎥 Live Video (Sirf Local)"],
-        horizontal=True
-    )
-
-    # ── WEBCAM MODE 1: Single Photo (st.camera_input) ────────────────────────
-    if webcam_mode == "📸 Single Photo (Cloud + Local)":
+    # ══════════════════════════════════════════════════════
+    # CLOUD MODE — Sirf Single Photo
+    # ══════════════════════════════════════════════════════
+    if not RUNNING_LOCAL:
         st.markdown("""
-        <div class="info-box">
-        📸 <b>Single Photo Mode</b> — Camera se ek photo lo, usse detect karo.<br>
-        Streamlit Cloud aur Local dono pe kaam karta hai!
+        <div class="cloud-box">
+            <h2>📸 Webcam Photo Mode</h2>
+            <p style="color:#555; font-size:1rem;">
+                Camera se photo lo aur turant object detection hoga!<br>
+                <b>Cloud pe Live Video nahi chalta</b> — local ke liye neeche guide dekho.
+            </p>
         </div>
         """, unsafe_allow_html=True)
 
-        camera_img = st.camera_input("📷 Camera se photo lo")
+        camera_img = st.camera_input("📷 Photo lo — detection automatic hoga!")
 
         if camera_img is not None:
-            pil_image = Image.open(camera_img).convert("RGB")
-            st.success(f"✅ Photo li gayi! ({pil_image.size[0]}×{pil_image.size[1]}px)")
+            pil_cam = Image.open(camera_img).convert("RGB")
+            st.success(f"✅ Photo li gayi! ({pil_cam.size[0]}×{pil_cam.size[1]}px)")
 
-            # Auto detect on camera capture
             with st.spinner("🧠 Model load ho raha hai..."):
                 model = load_model()
-            with st.spinner("⚡ Detecting objects..."):
-                results = run_inference(model, pil_image, score_thr)
-            with st.spinner("🎨 Drawing..."):
-                output_img, n_det = draw_results(
-                    pil_image, results,
+            with st.spinner("⚡ Objects detect ho rahe hain..."):
+                cam_results = run_inference(model, pil_cam, score_thr)
+            with st.spinner("🎨 Drawing results..."):
+                cam_output, cam_n = draw_results(
+                    pil_cam, cam_results,
                     mask_thr=mask_thr,
                     show_masks=show_masks,
                     show_boxes=show_boxes,
@@ -435,88 +440,82 @@ with tab4:
                     alpha=alpha
                 )
 
-            # Show side by side
             c1, c2 = st.columns(2)
             with c1:
                 st.markdown("**📷 Original Photo**")
-                st.image(pil_image, use_container_width=True)
+                st.image(pil_cam, use_container_width=True)
             with c2:
-                st.markdown(f"**🎭 Detected — {n_det} objects**")
-                st.image(output_img, use_container_width=True)
+                st.markdown(f"**🎭 Detected — {cam_n} objects**")
+                st.image(cam_output, use_container_width=True)
 
             # Download
-            out_pil = Image.fromarray(output_img)
             buf = BytesIO()
-            out_pil.save(buf, format="PNG")
-            st.download_button(
-                "⬇️ Download Result",
-                data=buf.getvalue(),
-                file_name="webcam_detection.png",
-                mime="image/png",
-                use_container_width=True
-            )
+            Image.fromarray(cam_output).save(buf, format="PNG")
+            st.download_button("⬇️ Download Result", buf.getvalue(),
+                               "webcam_result.png", "image/png",
+                               use_container_width=True)
 
             st.markdown("---")
-            show_result_details(results, n_det, score_thr)
+            show_result_details(cam_results, cam_n, score_thr)
 
-    # ── WEBCAM MODE 2: Live Video ─────────────────────────────────────────────
+        # Guide for live video
+        st.markdown("---")
+        with st.expander("🎥 Live Video kaise chalayein? (Local Guide)"):
+            st.markdown("""
+            ### Live Video sirf local computer pe kaam karta hai
+
+            #### Step 1 — Python install karo
+            ```bash
+            pip install streamlit torch torchvision opencv-python-headless numpy pillow requests pandas matplotlib
+            ```
+
+            #### Step 2 — File download karo GitHub se
+
+            #### Step 3 — Yeh command chalao
+            ```bash
+            streamlit run mask_rcnn_.py
+            ```
+
+            #### Step 4
+            - Browser mein `http://localhost:8501` khulega
+            - **Webcam tab** → **Live Video** button dikhega
+            - **▶️ Start** dabao — real-time detection shuru!
+
+            #### ✅ Tab band karo jab khatam ho
+            Terminal mein `Ctrl+C` dabao.
+            """)
+
+    # ══════════════════════════════════════════════════════
+    # LOCAL MODE — Photo + Live Video dono
+    # ══════════════════════════════════════════════════════
     else:
         st.markdown("""
         <div class="info-box">
-        🎥 <b>Live Video Mode</b> — Real-time detection har frame pe.<br>
-        ⚠️ <b>Sirf Local computer pe kaam karta hai</b> — Streamlit Cloud pe nahi.<br>
-        Local pe chalane ke liye: <code>streamlit run mask_rcnn_.py</code>
+        🖥️ <b>Local mode detect hua!</b> Dono webcam modes available hain.
         </div>
         """, unsafe_allow_html=True)
 
-        col_start, col_stop = st.columns(2)
-        start_live = col_start.button("▶️ Start Live Detection", type="primary", use_container_width=True)
-        stop_live  = col_stop.button("⏹️ Stop",                                  use_container_width=True)
+        webcam_mode = st.radio(
+            "Mode choose karo:",
+            ["📸 Single Photo", "🎥 Live Video"],
+            horizontal=True
+        )
 
-        # Session state for live detection
-        if 'live_running' not in st.session_state:
-            st.session_state.live_running = False
-        if start_live:
-            st.session_state.live_running = True
-        if stop_live:
-            st.session_state.live_running = False
+        # ── Single Photo ──────────────────────────────────────────────────────
+        if webcam_mode == "📸 Single Photo":
+            camera_img = st.camera_input("📷 Photo lo!")
 
-        if st.session_state.live_running:
-            st.markdown('<span class="live-badge">● LIVE</span>', unsafe_allow_html=True)
+            if camera_img is not None:
+                pil_cam = Image.open(camera_img).convert("RGB")
+                st.success(f"✅ Photo li gayi! ({pil_cam.size[0]}×{pil_cam.size[1]}px)")
 
-            # Placeholders for live update
-            frame_placeholder = st.empty()
-            info_placeholder  = st.empty()
-
-            with st.spinner("🧠 Model load ho raha hai..."):
-                model = load_model()
-
-            # Try to open webcam
-            cap = cv2.VideoCapture(0)
-
-            if not cap.isOpened():
-                st.error("❌ Webcam nahi mila! Check karo ki webcam connected hai aur local pe chal raha hai.")
-                st.session_state.live_running = False
-            else:
-                st.success("✅ Webcam connected! Live detection shuru...")
-                frame_count = 0
-
-                while st.session_state.live_running:
-                    ret, frame = cap.read()
-                    if not ret:
-                        st.error("❌ Camera se frame nahi aaya.")
-                        break
-
-                    # Convert BGR to RGB
-                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    pil_frame = Image.fromarray(frame_rgb)
-
-                    # Run inference
-                    results = run_inference(model, pil_frame, score_thr)
-
-                    # Draw results
-                    output_frame, n_det = draw_results(
-                        pil_frame, results,
+                with st.spinner("🧠 Loading model..."):
+                    model = load_model()
+                with st.spinner("⚡ Detecting..."):
+                    cam_results = run_inference(model, pil_cam, score_thr)
+                with st.spinner("🎨 Drawing..."):
+                    cam_output, cam_n = draw_results(
+                        pil_cam, cam_results,
                         mask_thr=mask_thr,
                         show_masks=show_masks,
                         show_boxes=show_boxes,
@@ -524,59 +523,135 @@ with tab4:
                         alpha=alpha
                     )
 
-                    # Show frame
-                    frame_placeholder.image(
-                        output_frame,
-                        caption=f"🎥 Live — Frame #{frame_count} — {n_det} objects detected",
-                        use_container_width=True
-                    )
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.markdown("**📷 Original**")
+                    st.image(pil_cam, use_container_width=True)
+                with c2:
+                    st.markdown(f"**🎭 Detected — {cam_n} objects**")
+                    st.image(cam_output, use_container_width=True)
 
-                    # Show live stats
-                    info_placeholder.markdown(f"""
-                    | Metric | Value |
-                    |---|---|
-                    | 🎯 Objects | **{n_det}** |
-                    | ⚡ Time | **{results['time']*1000:.0f}ms** |
-                    | 📸 Frame | **#{frame_count}** |
-                    | 🖥️ Device | **{str(device).upper()}** |
-                    """)
+                buf = BytesIO()
+                Image.fromarray(cam_output).save(buf, format="PNG")
+                st.download_button("⬇️ Download", buf.getvalue(),
+                                   "photo_result.png", "image/png",
+                                   use_container_width=True)
+                st.markdown("---")
+                show_result_details(cam_results, cam_n, score_thr)
 
-                    frame_count += 1
-
-                    # Stop button check
-                    if not st.session_state.live_running:
-                        break
-
-                cap.release()
-                st.info("⏹️ Live detection band ho gayi.")
-
+        # ── Live Video ────────────────────────────────────────────────────────
         else:
-            # Show instructions when not running
             st.markdown("""
-            <div style='text-align:center; padding:40px; background:#f9fafb; border-radius:16px; border:2px dashed #e5e7eb;'>
-                <h2>🎥</h2>
-                <p style='color:#888; font-size:1.1rem;'>
-                    <b>▶️ Start Live Detection</b> button dabao<br>
-                    webcam se real-time detection shuru ho jaayegi
-                </p>
-                <br>
-                <p style='color:#aaa; font-size:0.85rem;'>
-                    ⚠️ Local computer pe <code>streamlit run mask_rcnn_.py</code> se chalao
-                </p>
+            <div class="local-box">
+                <h3>🎥 Live Video Detection</h3>
+                <p style="color:#555;">Webcam se real-time object detection</p>
             </div>
             """, unsafe_allow_html=True)
 
+            col1, col2 = st.columns(2)
+            start_btn = col1.button("▶️ Start Live Detection",
+                                    type="primary", use_container_width=True)
+            stop_btn  = col2.button("⏹️ Stop",
+                                    use_container_width=True)
+
+            if 'live_on' not in st.session_state:
+                st.session_state.live_on = False
+            if start_btn:
+                st.session_state.live_on = True
+            if stop_btn:
+                st.session_state.live_on = False
+
+            if st.session_state.live_on:
+                st.markdown('<span class="live-badge">● LIVE</span>', unsafe_allow_html=True)
+
+                frame_ph = st.empty()
+                stats_ph = st.empty()
+
+                with st.spinner("🧠 Model load ho raha hai..."):
+                    model = load_model()
+
+                cap = cv2.VideoCapture(0)
+
+                if not cap.isOpened():
+                    st.error("❌ Webcam nahi khula! Koi doosra app use kar raha hoga.")
+                    st.session_state.live_on = False
+                else:
+                    st.success("✅ Webcam connected! Detection chal rahi hai...")
+                    frame_count = 0
+
+                    while st.session_state.live_on:
+                        ret, frame = cap.read()
+                        if not ret:
+                            st.error("❌ Frame nahi aaya.")
+                            break
+
+                        # BGR → RGB → PIL
+                        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        pil_f     = Image.fromarray(frame_rgb)
+
+                        # Inference
+                        res = run_inference(model, pil_f, score_thr)
+
+                        # Draw
+                        out_f, nd = draw_results(
+                            pil_f, res,
+                            mask_thr=mask_thr,
+                            show_masks=show_masks,
+                            show_boxes=show_boxes,
+                            show_labels=show_labels,
+                            alpha=alpha
+                        )
+
+                        # Show frame
+                        frame_ph.image(
+                            out_f,
+                            caption=f"🎥 Live Frame #{frame_count} — {nd} objects",
+                            use_container_width=True
+                        )
+
+                        # Live stats
+                        detected_names = list(set([
+                            COCO_CLASSES.get(int(results_l), '?')
+                            for results_l in res['labels']
+                        ]))
+                        stats_ph.markdown(f"""
+                        | | |
+                        |---|---|
+                        | 🎯 Objects | **{nd}** |
+                        | ⚡ Time | **{res['time']*1000:.0f}ms** |
+                        | 📸 Frame | **#{frame_count}** |
+                        | 🏷️ Classes | **{', '.join(detected_names) if detected_names else 'None'}** |
+                        """)
+
+                        frame_count += 1
+
+                        if not st.session_state.live_on:
+                            break
+
+                    cap.release()
+                    st.info("⏹️ Live detection band ho gayi.")
+
+            else:
+                st.markdown("""
+                <div style='text-align:center; padding:50px; background:#f9fafb;
+                            border-radius:16px; border:2px dashed #e5e7eb;'>
+                    <h2 style='color:#764ba2;'>🎥</h2>
+                    <p style='color:#888; font-size:1.1rem;'>
+                        <b>▶️ Start Live Detection</b> dabao<br>
+                        real-time webcam detection shuru ho jaayegi!
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+
 # ─────────────────────────────────────────────────────────────────────────────
-# STEP 2 — Run Detection (for Upload/URL/Sample tabs)
+# RUN BUTTON (Upload / URL / Sample ke liye)
 # ─────────────────────────────────────────────────────────────────────────────
 if pil_image is not None:
     st.markdown("---")
-    st.markdown('<div class="section-header">🔮 Step 2 — Run Detection</div>', unsafe_allow_html=True)
+    st.markdown("### 🔮 Step 2 — Run Detection")
 
-    run = st.button("🚀 Run Mask R-CNN", type="primary", use_container_width=True)
-
-    if run:
-        with st.spinner("🧠 Model load ho raha hai (pehli baar ~30s lag sakta hai)..."):
+    if st.button("🚀 Run Mask R-CNN", type="primary", use_container_width=True):
+        with st.spinner("🧠 Model load ho raha hai..."):
             model = load_model()
         with st.spinner("⚡ Inference chal rahi hai..."):
             results = run_inference(model, pil_image, score_thr)
@@ -590,98 +665,62 @@ if pil_image is not None:
                 alpha=alpha
             )
 
-        # Side by side
         st.markdown("---")
         left, right = st.columns(2)
         with left:
             st.markdown("**🖼️ Original Image**")
             st.image(pil_image, use_container_width=True)
         with right:
-            st.markdown(f"**🎭 Segmentation Output — {n_det} instances**")
+            st.markdown(f"**🎭 Result — {n_det} instances**")
             st.image(output_img, use_container_width=True)
 
-        # Download
-        out_pil = Image.fromarray(output_img)
         buf = BytesIO()
-        out_pil.save(buf, format="PNG")
-        st.download_button(
-            "⬇️ Download Segmented Image",
-            data=buf.getvalue(),
-            file_name="mask_rcnn_output.png",
-            mime="image/png",
-            use_container_width=True
-        )
+        Image.fromarray(output_img).save(buf, format="PNG")
+        st.download_button("⬇️ Download Result", buf.getvalue(),
+                           "mask_rcnn_output.png", "image/png",
+                           use_container_width=True)
 
         st.markdown("---")
         show_result_details(results, n_det, score_thr)
 
 # ─────────────────────────────────────────────────────────────────────────────
-# ABOUT SECTION
+# ABOUT
 # ─────────────────────────────────────────────────────────────────────────────
 st.markdown("---")
-col_a, col_b = st.columns(2)
+c1, c2 = st.columns(2)
 
-with col_a:
+with c1:
     with st.expander("ℹ️ Mask R-CNN kya hai?"):
         st.markdown("""
 **Mask R-CNN** ek deep learning model hai jo:
-- Har object ko alag alag **detect** karta hai
-- Har object ke aas paas **box** draw karta hai
+- Objects ko **detect** karta hai (80 categories)
+- Har object ke around **bounding box** draw karta hai
 - Har object ka **pixel-level mask** banata hai
 
-**Kaise kaam karta hai:**
-1. **ResNet-50** — image se features nikalti hai
-2. **FPN** — alag alag sizes ki features combine karta hai
-3. **RPN** — object ke possible locations suggest karta hai
-4. **RoI Align** — har region ke features pool karta hai
-5. **3 Heads** — class, box, aur mask predict karte hain
+**Pipeline:**
+1. ResNet-50 → features extract karta hai
+2. FPN → multi-scale features combine karta hai
+3. RPN → object regions suggest karta hai
+4. RoI Align → features pool karta hai
+5. 3 Heads → class + box + mask predict karte hain
 
 **Paper:** He et al., *Mask R-CNN*, ICCV 2017
         """)
 
-with col_b:
-    with st.expander("📦 Model Details"):
+with c2:
+    with st.expander("📦 Model Info"):
         st.markdown(f"""
 | Property | Value |
 |---|---|
-| Architecture | Mask R-CNN |
+| Model | Mask R-CNN |
 | Backbone | ResNet-50 + FPN |
-| Pretrained on | MS-COCO 2017 |
+| Pretrained | MS-COCO 2017 |
 | Categories | 80 |
 | Parameters | ~44 million |
 | Device | `{str(device).upper()}` |
-| PyTorch | `{torch.__version__}` |
 | Webcam (Cloud) | ✅ Single Photo |
-| Webcam (Local) | ✅ Live Video |
+| Webcam (Local) | ✅ Photo + Live Video |
         """)
-
-with st.expander("📷 Webcam Guide — Kaise use karein?"):
-    st.markdown("""
-### 📸 Single Photo Mode (Cloud + Local)
-1. **Webcam** tab pe jao
-2. **Single Photo** select karo
-3. Camera allow karo browser mein
-4. Photo lo — **automatic detect** ho jaayega!
-
----
-
-### 🎥 Live Video Mode (Sirf Local)
-1. Apne computer pe yeh command chalao:
-```bash
-pip install streamlit torch torchvision opencv-python
-streamlit run mask_rcnn_.py
-```
-2. Browser mein `http://localhost:8501` khulega
-3. **Webcam** tab → **Live Video** → **▶️ Start** dabao
-4. Real-time detection shuru! **⏹️ Stop** se band karo
-
----
-
-### ⚠️ Important Notes:
-- Live Video mode **Streamlit Cloud pe nahi** chalega
-- Single Photo mode **dono jagah** chalega
-- Camera permission browser mein **Allow** karna zaruri hai
-    """)
 
 with st.expander("🏷️ All 80 COCO Classes"):
     cols = st.columns(5)
@@ -696,7 +735,7 @@ st.markdown("""
 <div class="footer">
     🎭 Mask R-CNN Instance Segmentation &nbsp;·&nbsp;
     Built with Streamlit &nbsp;·&nbsp;
-    Model: torchvision pretrained on MS-COCO 2017 &nbsp;·&nbsp;
-    📷 Image + Webcam Support
+    MS-COCO 2017 Pretrained &nbsp;·&nbsp;
+    📷 Cloud Photo + 🎥 Local Live Video
 </div>
 """, unsafe_allow_html=True)
