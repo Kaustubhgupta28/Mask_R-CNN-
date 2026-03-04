@@ -1,9 +1,7 @@
 torch
 torchvision
-torchaudio
 opencv-python
 matplotlib
 Pillow
 numpy
 requests
-moviepy==1.0.3
