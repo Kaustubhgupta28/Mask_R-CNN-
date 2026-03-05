@@ -29,8 +29,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ── Session State Init ────────────────────────────────────────
-for key, val in [('pil_image',None),('result_img',None),('results',None),('n_det',0),('live_on',False)]:
+# ── Session State ─────────────────────────────────────────────
+for key, val in [
+    ('pil_image', None), ('result_img', None), ('results', None),
+    ('n_det', 0), ('live_on', False), ('camera_active', False)
+]:
     if key not in st.session_state:
         st.session_state[key] = val
 
@@ -115,10 +118,7 @@ div[data-testid="stTabs"] button {
     color:#64748b !important;font-weight:600 !important;border:1px solid rgba(0,212,255,0.15) !important;
     box-shadow:0 4px 8px rgba(0,0,0,0.35),inset 0 1px 0 rgba(0,212,255,0.1) !important;transition:all 0.2s ease !important;
 }
-div[data-testid="stTabs"] button:hover {
-    color:#00d4ff !important;transform:translateY(-2px) !important;
-    box-shadow:0 8px 16px rgba(0,0,0,0.4),0 0 12px rgba(0,212,255,0.2) !important;
-}
+div[data-testid="stTabs"] button:hover{color:#00d4ff !important;transform:translateY(-2px) !important;box-shadow:0 8px 16px rgba(0,0,0,0.4),0 0 12px rgba(0,212,255,0.2) !important;}
 div[data-testid="stTabs"] button[aria-selected="true"] {
     background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(123,47,255,0.15)) !important;
     color:#00d4ff !important;transform:translateY(-3px) !important;
@@ -134,21 +134,10 @@ div[data-testid="stFileUploader"] section,div[data-testid="stFileUploader"] sect
     background:rgba(0,15,40,0.9) !important;background-color:rgba(0,15,40,0.9) !important;border-radius:10px !important;border:none !important;
 }
 div[data-testid="stFileUploader"] span,div[data-testid="stFileUploader"] p,div[data-testid="stFileUploader"] small{color:#64748b !important;}
-div[data-testid="stFileUploader"] button {
-    background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(123,47,255,0.15)) !important;
-    color:#00d4ff !important;border:1px solid rgba(0,212,255,0.4) !important;border-radius:8px !important;
-}
-div[data-testid="stExpander"] {
-    background:rgba(0,20,50,0.7) !important;border:1px solid rgba(0,212,255,0.2) !important;border-radius:12px !important;
-    box-shadow:0 4px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(0,212,255,0.08) !important;transition:transform 0.25s ease,box-shadow 0.25s ease !important;
-}
+div[data-testid="stFileUploader"] button{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(123,47,255,0.15)) !important;color:#00d4ff !important;border:1px solid rgba(0,212,255,0.4) !important;border-radius:8px !important;}
+div[data-testid="stExpander"]{background:rgba(0,20,50,0.7) !important;border:1px solid rgba(0,212,255,0.2) !important;border-radius:12px !important;box-shadow:0 4px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(0,212,255,0.08) !important;transition:transform 0.25s ease,box-shadow 0.25s ease !important;}
 div[data-testid="stExpander"]:hover{transform:translateY(-2px) !important;border-color:rgba(0,212,255,0.4) !important;box-shadow:0 8px 24px rgba(0,0,0,0.45),0 0 16px rgba(0,212,255,0.12) !important;}
-div[data-testid="stButton"] button[kind="primary"] {
-    background:linear-gradient(135deg,#00d4ff,#7b2fff) !important;border:none !important;border-radius:12px !important;
-    font-weight:700 !important;color:white !important;
-    box-shadow:0 6px 0 rgba(0,100,150,0.6),0 8px 16px rgba(0,0,0,0.4),0 0 20px rgba(0,212,255,0.4) !important;
-    transition:transform 0.1s ease,box-shadow 0.1s ease !important;
-}
+div[data-testid="stButton"] button[kind="primary"]{background:linear-gradient(135deg,#00d4ff,#7b2fff) !important;border:none !important;border-radius:12px !important;font-weight:700 !important;color:white !important;box-shadow:0 6px 0 rgba(0,100,150,0.6),0 8px 16px rgba(0,0,0,0.4),0 0 20px rgba(0,212,255,0.4) !important;transition:transform 0.1s ease,box-shadow 0.1s ease !important;}
 div[data-testid="stButton"] button[kind="primary"]:hover{transform:translateY(-3px) !important;box-shadow:0 9px 0 rgba(0,100,150,0.5),0 12px 24px rgba(0,0,0,0.5),0 0 35px rgba(0,212,255,0.6) !important;}
 div[data-testid="stButton"] button[kind="primary"]:active{transform:translateY(4px) !important;box-shadow:0 2px 0 rgba(0,100,150,0.6),0 2px 6px rgba(0,0,0,0.3),0 0 10px rgba(0,212,255,0.3) !important;animation:none !important;}
 div[data-testid="stButton"] button:not([kind="primary"]){box-shadow:0 4px 0 rgba(0,50,80,0.7),0 6px 12px rgba(0,0,0,0.3) !important;border-radius:10px !important;transition:transform 0.1s,box-shadow 0.1s !important;}
@@ -204,7 +193,7 @@ div[data-testid="stDataFrame"]{border:1px solid rgba(0,212,255,0.2) !important;b
 
 RUNNING_LOCAL = is_local()
 
-# ── Video Processing Helper ───────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────
 def process_video(video_path, model, original_filename="video.mp4"):
     try:
         import imageio
@@ -221,10 +210,9 @@ def process_video(video_path, model, original_filename="video.mp4"):
         st.error("❌ Could not open the video file. It may be corrupted or in an unsupported format.")
         return None, {}, 0
     st.markdown(f'<div class="metric-card" style="text-align:left;padding:14px 20px;margin:10px 0;"><span style="color:#64748b;font-size:0.85rem;">📹 <b style="color:#00d4ff;">{total_frames}</b> frames &nbsp;·&nbsp; 🎞️ <b style="color:#00d4ff;">{fps:.1f}</b> FPS &nbsp;·&nbsp; 📐 <b style="color:#00d4ff;">{width}×{height}</b>px</span></div>', unsafe_allow_html=True)
-    out_path      = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
-    progress_bar  = st.progress(0, text="⏳ Processing frames...")
-    preview_ph    = st.empty()
-    stats_ph      = st.empty()
+    out_path=tempfile.NamedTemporaryFile(delete=False,suffix=".mp4").name
+    progress_bar=st.progress(0,text="⏳ Processing frames...")
+    preview_ph=st.empty(); stats_ph=st.empty()
     frame_idx=0; total_det=0; all_classes={}; start_time=time.time(); output_frames=[]
     try:
         reader = imageio.get_reader(video_path, format='ffmpeg')
@@ -232,68 +220,68 @@ def process_video(video_path, model, original_filename="video.mp4"):
         st.error(f"❌ Failed to read video: {e}")
         return None, {}, 0
     for frame_rgb in reader:
-        pil_f     = Image.fromarray(frame_rgb)
-        res       = run_inference(model, pil_f, score_thr)
-        out_f, nd = draw_results(pil_f, res, mask_thr=mask_thr, show_masks=show_masks, show_boxes=show_boxes, show_labels=show_labels, alpha=alpha)
+        pil_f=Image.fromarray(frame_rgb)
+        res=run_inference(model,pil_f,score_thr)
+        out_f,nd=draw_results(pil_f,res,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
         output_frames.append(out_f)
-        total_det += nd
+        total_det+=nd
         for lbl in res['labels']:
-            cname = COCO_CLASSES.get(int(lbl), '?')
-            all_classes[cname] = all_classes.get(cname, 0) + 1
-        frame_idx += 1
-        elapsed = time.time() - start_time
-        eta = (elapsed/frame_idx)*(total_frames-frame_idx) if frame_idx > 0 else 0
-        progress_bar.progress(min(frame_idx/max(total_frames,1),1.0), text=f"⏳ Processing frame {frame_idx} of {total_frames} — ETA: {eta:.0f}s")
-        if frame_idx % 10 == 0:
-            preview_ph.image(out_f, caption=f"Frame #{frame_idx} — {nd} object(s) detected", width="stretch")
+            cname=COCO_CLASSES.get(int(lbl),'?')
+            all_classes[cname]=all_classes.get(cname,0)+1
+        frame_idx+=1
+        elapsed=time.time()-start_time
+        eta=(elapsed/frame_idx)*(total_frames-frame_idx) if frame_idx>0 else 0
+        progress_bar.progress(min(frame_idx/max(total_frames,1),1.0),text=f"⏳ Processing frame {frame_idx} of {total_frames} — ETA: {eta:.0f}s")
+        if frame_idx%10==0:
+            preview_ph.image(out_f,caption=f"Frame #{frame_idx} — {nd} object(s) detected",width="stretch")
             stats_ph.markdown(f"| | |\n|---|---|\n| 🎯 Frame | **{frame_idx} / {total_frames}** |\n| 🔍 This frame | **{nd}** |\n| 📊 Total detections | **{total_det}** |\n| ⏱️ Elapsed | **{elapsed:.1f}s** |\n| 🏷️ Classes | **{', '.join(list(all_classes.keys())[:5])}{'...' if len(all_classes)>5 else ''}** |")
     reader.close()
     with st.spinner("💾 Saving output video..."):
         try:
-            writer = imageio.get_writer(out_path, format='ffmpeg', fps=fps, codec='libx264', output_params=['-pix_fmt','yuv420p'])
+            writer=imageio.get_writer(out_path,format='ffmpeg',fps=fps,codec='libx264',output_params=['-pix_fmt','yuv420p'])
             for frm in output_frames: writer.append_data(frm)
             writer.close()
         except Exception as e:
             st.error(f"❌ Failed to save output video: {e}")
             return None, all_classes, total_det
-    progress_bar.progress(1.0, text="✅ Processing complete!")
+    progress_bar.progress(1.0,text="✅ Processing complete!")
     return out_path, all_classes, total_det
 
 def show_video_summary(out_path, all_classes, total_det, total_frames, filename="output.mp4"):
     st.markdown("---")
     st.markdown("### 📊 Video Detection Summary")
-    sc1,sc2,sc3 = st.columns(3)
-    sc1.markdown(f'<div class="metric-card"><div class="metric-val">{total_frames}</div><div class="metric-lbl">Total Frames</div></div>', unsafe_allow_html=True)
-    sc2.markdown(f'<div class="metric-card"><div class="metric-val">{total_det}</div><div class="metric-lbl">Total Detections</div></div>', unsafe_allow_html=True)
-    sc3.markdown(f'<div class="metric-card"><div class="metric-val">{total_det//max(total_frames,1)}</div><div class="metric-lbl">Avg per Frame</div></div>', unsafe_allow_html=True)
+    sc1,sc2,sc3=st.columns(3)
+    sc1.markdown(f'<div class="metric-card"><div class="metric-val">{total_frames}</div><div class="metric-lbl">Total Frames</div></div>',unsafe_allow_html=True)
+    sc2.markdown(f'<div class="metric-card"><div class="metric-val">{total_det}</div><div class="metric-lbl">Total Detections</div></div>',unsafe_allow_html=True)
+    sc3.markdown(f'<div class="metric-card"><div class="metric-val">{total_det//max(total_frames,1)}</div><div class="metric-lbl">Avg per Frame</div></div>',unsafe_allow_html=True)
     if all_classes:
         st.markdown("#### 🏷️ Classes Detected")
-        st.dataframe(pd.DataFrame(sorted(all_classes.items(),key=lambda x:-x[1]),columns=["Class","Total Detections"]), width="stretch", hide_index=True)
+        st.dataframe(pd.DataFrame(sorted(all_classes.items(),key=lambda x:-x[1]),columns=["Class","Total Detections"]),width="stretch",hide_index=True)
     if out_path and os.path.exists(out_path):
         st.markdown("---")
         with open(out_path,"rb") as f: video_bytes=f.read()
-        st.download_button("⬇️ Download Output Video", video_bytes, f"mask_rcnn_{filename}", "video/mp4", width="stretch", type="primary")
+        st.download_button("⬇️ Download Output Video",video_bytes,f"mask_rcnn_{filename}","video/mp4",width="stretch",type="primary")
         try: os.unlink(out_path)
         except: pass
 
 def show_result_details(results, n_det, score_thr):
-    if n_det == 0:
+    if n_det==0:
         st.warning("⚠️ No objects detected. Try lowering the Confidence Threshold.")
         return
-    mc1,mc2,mc3,mc4 = st.columns(4)
-    mc1.markdown(f'<div class="metric-card"><div class="metric-val">{n_det}</div><div class="metric-lbl">Objects Detected</div></div>', unsafe_allow_html=True)
-    mc2.markdown(f'<div class="metric-card"><div class="metric-val">{results["time"]*1000:.0f}ms</div><div class="metric-lbl">Inference Time</div></div>', unsafe_allow_html=True)
-    mc3.markdown(f'<div class="metric-card"><div class="metric-val">{score_thr:.2f}</div><div class="metric-lbl">Confidence Threshold</div></div>', unsafe_allow_html=True)
-    mc4.markdown(f'<div class="metric-card"><div class="metric-val">{str(device).upper()}</div><div class="metric-lbl">Device</div></div>', unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
+    mc1,mc2,mc3,mc4=st.columns(4)
+    mc1.markdown(f'<div class="metric-card"><div class="metric-val">{n_det}</div><div class="metric-lbl">Objects Detected</div></div>',unsafe_allow_html=True)
+    mc2.markdown(f'<div class="metric-card"><div class="metric-val">{results["time"]*1000:.0f}ms</div><div class="metric-lbl">Inference Time</div></div>',unsafe_allow_html=True)
+    mc3.markdown(f'<div class="metric-card"><div class="metric-val">{score_thr:.2f}</div><div class="metric-lbl">Confidence Threshold</div></div>',unsafe_allow_html=True)
+    mc4.markdown(f'<div class="metric-card"><div class="metric-val">{str(device).upper()}</div><div class="metric-lbl">Device</div></div>',unsafe_allow_html=True)
+    st.markdown("<br>",unsafe_allow_html=True)
     st.markdown("#### 📋 Detection Details")
     rows=[]
     for i in range(n_det):
         lid=int(results['labels'][i]); lname=COCO_CLASSES.get(lid,f'class_{lid}')
         score=float(results['scores'][i]); box=results['boxes'][i].astype(int)
-        rows.append({"#":i+1,"Class":lname,"Score":f"{score:.3f}","Width (px)":int(box[2]-box[0]),"Height (px)":int(box[3]-box[1]),"Bounding Box [x1,y1,x2,y2]":f"[{box[0]},{box[1]},{box[2]},{box[3]}]"})
-    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
-    ch1,ch2 = st.columns(2)
+        rows.append({"#":i+1,"Class":lname,"Score":f"{score:.3f}","Width (px)":int(box[2]-box[0]),"Height (px)":int(box[3]-box[1]),"Bounding Box":f"[{box[0]},{box[1]},{box[2]},{box[3]}]"})
+    st.dataframe(pd.DataFrame(rows),width="stretch",hide_index=True)
+    ch1,ch2=st.columns(2)
     with ch1:
         st.markdown("#### 📊 Class Distribution")
         class_counts={}
@@ -311,7 +299,7 @@ def show_result_details(results, n_det, score_thr):
         for s in ['bottom','left']:ax.spines[s].set_color('#1e3a5f')
         plt.xticks(rotation=30,ha='right',fontsize=9,color='#94a3b8');plt.tight_layout();st.pyplot(fig);plt.close()
     with ch2:
-        if n_det > 1:
+        if n_det>1:
             st.markdown("#### 📉 Confidence Scores")
             scores_list=results['scores'].tolist()
             labels_list=[COCO_CLASSES.get(int(l),'?') for l in results['labels']]
@@ -329,7 +317,7 @@ def show_result_details(results, n_det, score_thr):
             plt.tight_layout();st.pyplot(fig2);plt.close()
 
 # ── Header ────────────────────────────────────────────────────
-env_icon = "🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
+env_icon="🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
 st.markdown(f"""
 <div class="neural-header">
     <p class="main-title">🎭 Mask R-CNN</p>
@@ -349,23 +337,23 @@ st.markdown("---")
 # ── Sidebar ───────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
-    score_thr = st.slider("🎯 Confidence Threshold", 0.10, 0.95, 0.50, 0.05)
-    st.markdown('<div class="slider-desc"><b>How confident should the model be?</b><br>↑ Higher → More accurate, fewer detections<br>↓ Lower → More detections, possible false positives</div>', unsafe_allow_html=True)
-    mask_thr = st.slider("🎨 Mask Threshold", 0.10, 0.90, 0.50, 0.05)
-    st.markdown('<div class="slider-desc"><b>How tight should the object silhouette be?</b><br>↑ Higher → Sharp, precise edges<br>↓ Lower → Looser mask, more area coverage</div>', unsafe_allow_html=True)
-    alpha = st.slider("🌫️ Mask Transparency", 0.10, 0.90, 0.45, 0.05)
-    st.markdown('<div class="slider-desc"><b>Color overlay opacity:</b><br>↑ Higher → More opaque mask overlay<br>↓ Lower → Original image more visible</div>', unsafe_allow_html=True)
+    score_thr=st.slider("🎯 Confidence Threshold",0.10,0.95,0.50,0.05)
+    st.markdown('<div class="slider-desc"><b>How confident should the model be?</b><br>↑ Higher → More accurate, fewer detections<br>↓ Lower → More detections, possible false positives</div>',unsafe_allow_html=True)
+    mask_thr=st.slider("🎨 Mask Threshold",0.10,0.90,0.50,0.05)
+    st.markdown('<div class="slider-desc"><b>How tight should the object silhouette be?</b><br>↑ Higher → Sharp, precise edges<br>↓ Lower → Looser mask, more area coverage</div>',unsafe_allow_html=True)
+    alpha=st.slider("🌫️ Mask Transparency",0.10,0.90,0.45,0.05)
+    st.markdown('<div class="slider-desc"><b>Color overlay opacity:</b><br>↑ Higher → More opaque mask overlay<br>↓ Lower → Original image more visible</div>',unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("## 👁️ Display Options")
-    show_masks  = st.checkbox("Show Masks",  value=True)
-    show_boxes  = st.checkbox("Show Bounding Boxes", value=True)
-    show_labels = st.checkbox("Show Labels", value=True)
+    show_masks=st.checkbox("Show Masks",value=True)
+    show_boxes=st.checkbox("Show Bounding Boxes",value=True)
+    show_labels=st.checkbox("Show Labels",value=True)
     st.markdown("---")
     if st.session_state['pil_image'] is not None:
-        if st.button("🔄 Re-run with New Settings", type="primary", width="stretch"):
-            st.session_state['result_img'] = None
-            st.session_state['results']    = None
-            st.session_state['n_det']      = 0
+        if st.button("🔄 Re-run with New Settings",type="primary",width="stretch"):
+            st.session_state['result_img']=None
+            st.session_state['results']=None
+            st.session_state['n_det']=0
     st.markdown("---")
     st.markdown("## 🖥️ System Info")
     st.markdown(f"**Device:** `{str(device).upper()}`")
@@ -378,20 +366,20 @@ with st.sidebar:
 
 # ── Tabs ──────────────────────────────────────────────────────
 st.markdown("### 📥 Select Input Source")
-tab1, tab2, tab3, tab4 = st.tabs(["📁 Upload File","🔗 Image / Video URL","🖼️ Sample Images","📷 Webcam"])
+tab1,tab2,tab3,tab4=st.tabs(["📁 Upload File","🔗 Image / Video URL","🖼️ Sample Images","📷 Webcam"])
 
 # ── Tab 1: Upload ─────────────────────────────────────────────
 with tab1:
-    uploaded = st.file_uploader("Upload an Image or Video file", type=["jpg","jpeg","png","mp4","avi","mov","mkv"])
+    uploaded=st.file_uploader("Upload an Image or Video file",type=["jpg","jpeg","png","mp4","avi","mov","mkv"])
     if uploaded:
-        file_type = uploaded.type
+        file_type=uploaded.type
         if file_type.startswith("image"):
-            img = Image.open(uploaded).convert("RGB")
-            st.session_state['pil_image']  = img
-            st.session_state['result_img'] = None
-            st.session_state['results']    = None
+            img=Image.open(uploaded).convert("RGB")
+            st.session_state['pil_image']=img
+            st.session_state['result_img']=None
+            st.session_state['results']=None
             st.success(f"✅ {uploaded.name} loaded successfully ({img.size[0]}×{img.size[1]}px)")
-            st.image(img, width="stretch")
+            st.image(img,width="stretch")
         elif file_type.startswith("video"):
             st.success(f"✅ Video uploaded: **{uploaded.name}**")
             st.video(uploaded)
@@ -400,21 +388,20 @@ with tab1:
 ⚡ <b>Detection will run on every frame.</b><br>
 Large videos may take longer to process on cloud.<br>
 Once complete, you can download the fully annotated output video.
-</div>""", unsafe_allow_html=True)
-            if st.button("🚀 Start Video Detection", type="primary", width="stretch"):
-                tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-                tfile.write(uploaded.read()); tfile.flush()
-                with st.spinner("🧠 Loading model..."):
-                    model = load_model()
-                out_path, all_classes, total_det = process_video(tfile.name, model, uploaded.name)
-                cap2 = cv2.VideoCapture(tfile.name)
-                total_frames = int(cap2.get(cv2.CAP_PROP_FRAME_COUNT)); cap2.release()
-                show_video_summary(out_path, all_classes, total_det, total_frames, uploaded.name)
+</div>""",unsafe_allow_html=True)
+            if st.button("🚀 Start Video Detection",type="primary",width="stretch"):
+                tfile=tempfile.NamedTemporaryFile(delete=False,suffix=".mp4")
+                tfile.write(uploaded.read());tfile.flush()
+                with st.spinner("🧠 Loading model..."): model=load_model()
+                out_path,all_classes,total_det=process_video(tfile.name,model,uploaded.name)
+                cap2=cv2.VideoCapture(tfile.name)
+                total_frames=int(cap2.get(cv2.CAP_PROP_FRAME_COUNT));cap2.release()
+                show_video_summary(out_path,all_classes,total_det,total_frames,uploaded.name)
                 try: os.unlink(tfile.name)
                 except: pass
     elif st.session_state['pil_image'] is not None:
         st.info("ℹ️ Previous image is loaded. Upload a new file or click Run Detection below.")
-        st.image(st.session_state['pil_image'], width="stretch")
+        st.image(st.session_state['pil_image'],width="stretch")
 
 # ── Tab 2: URL ────────────────────────────────────────────────
 with tab2:
@@ -422,19 +409,19 @@ with tab2:
 💡 <b>Only direct file URLs are supported.</b><br>
 🖼️ Image: <code>.jpg &nbsp;.jpeg &nbsp;.png &nbsp;.webp</code> &nbsp;|&nbsp; 🎬 Video: <code>.mp4 &nbsp;.avi &nbsp;.mov &nbsp;.mkv</code><br>
 ⚠️ YouTube, Bing, and Google links are <b>not supported</b> — they do not serve direct files.
-</div>""", unsafe_allow_html=True)
-    url = st.text_input("Paste a direct Image or Video URL:", placeholder="https://example.com/image.jpg")
+</div>""",unsafe_allow_html=True)
+    url=st.text_input("Paste a direct Image or Video URL:",placeholder="https://example.com/image.jpg")
     if url:
-        url_clean  = url.lower().split("?")[0].split("#")[0]
-        video_exts = (".mp4",".avi",".mov",".mkv",".webm",".mpeg")
-        image_exts = (".jpg",".jpeg",".png",".gif",".webp",".bmp")
-        is_video   = any(url_clean.endswith(e) for e in video_exts)
-        is_image   = any(url_clean.endswith(e) for e in image_exts)
+        url_clean=url.lower().split("?")[0].split("#")[0]
+        video_exts=(".mp4",".avi",".mov",".mkv",".webm",".mpeg")
+        image_exts=(".jpg",".jpeg",".png",".gif",".webp",".bmp")
+        is_video=any(url_clean.endswith(e) for e in video_exts)
+        is_image=any(url_clean.endswith(e) for e in image_exts)
         if not is_video and not is_image:
             try:
                 with st.spinner("🔍 Detecting URL type..."):
-                    head = requests.head(url, timeout=8, allow_redirects=True, headers={"User-Agent":"Mozilla/5.0"})
-                    ct = head.headers.get("Content-Type","").lower()
+                    head=requests.head(url,timeout=8,allow_redirects=True,headers={"User-Agent":"Mozilla/5.0"})
+                    ct=head.headers.get("Content-Type","").lower()
                 if any(v in ct for v in ["video","mp4","webm","mpeg"]): is_video=True
                 elif any(i in ct for i in ["image","jpeg","png","gif","webp"]): is_image=True
                 elif "text/html" in ct:
@@ -442,22 +429,21 @@ with tab2:
                     is_image=False
                 else: is_image=True
             except Exception: is_image=True
-
         if is_image and not is_video:
             try:
                 with st.spinner("⬇️ Downloading image..."):
-                    r = requests.get(url, timeout=15, headers={"User-Agent":"Mozilla/5.0"})
+                    r=requests.get(url,timeout=15,headers={"User-Agent":"Mozilla/5.0"})
                     r.raise_for_status()
-                    ct = r.headers.get("Content-Type","").lower()
+                    ct=r.headers.get("Content-Type","").lower()
                     if "text/html" in ct:
                         st.error("❌ The server returned a webpage instead of an image. Please use a direct image file URL.")
                         st.stop()
-                    img = Image.open(BytesIO(r.content)).convert("RGB")
-                st.session_state['pil_image']  = img
-                st.session_state['result_img'] = None
-                st.session_state['results']    = None
+                    img=Image.open(BytesIO(r.content)).convert("RGB")
+                st.session_state['pil_image']=img
+                st.session_state['result_img']=None
+                st.session_state['results']=None
                 st.success(f"✅ Image downloaded successfully! ({img.size[0]}×{img.size[1]}px)")
-                st.image(img, width="stretch")
+                st.image(img,width="stretch")
             except Exception as e:
                 st.error(f"❌ Failed to load image: {e}")
                 st.markdown("""<div class="warn-box">
@@ -466,155 +452,161 @@ with tab2:
 • The server blocked the request (access restricted)<br>
 • The URL has expired or is no longer valid<br><br>
 ✅ <b>Tip:</b> Open the URL in your browser — it should display the image directly, with no webpage around it.
-</div>""", unsafe_allow_html=True)
-
+</div>""",unsafe_allow_html=True)
         elif is_video:
             st.markdown(f"""<div class="info-box">🎬 <b>Video URL detected!</b><br>
-<code style="font-size:0.8rem;word-break:break-all;">{url[:100]}{'...' if len(url)>100 else ''}</code></div>""", unsafe_allow_html=True)
-            if st.button("⬇️ Download & Run Detection", type="primary", width="stretch"):
-                progress_dl = st.progress(0, text="⬇️ Downloading video...")
+<code style="font-size:0.8rem;word-break:break-all;">{url[:100]}{'...' if len(url)>100 else ''}</code></div>""",unsafe_allow_html=True)
+            if st.button("⬇️ Download & Run Detection",type="primary",width="stretch"):
+                progress_dl=st.progress(0,text="⬇️ Downloading video...")
                 try:
-                    with requests.get(url, stream=True, timeout=120, headers={"User-Agent":"Mozilla/5.0"}) as r:
+                    with requests.get(url,stream=True,timeout=120,headers={"User-Agent":"Mozilla/5.0"}) as r:
                         r.raise_for_status()
-                        ct = r.headers.get("Content-Type","").lower()
+                        ct=r.headers.get("Content-Type","").lower()
                         if "text/html" in ct:
                             st.error("❌ This is a webpage. Please provide a direct .mp4 file URL.")
                             st.stop()
-                        total_size = int(r.headers.get("content-length",0))
-                        tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+                        total_size=int(r.headers.get("content-length",0))
+                        tfile=tempfile.NamedTemporaryFile(delete=False,suffix=".mp4")
                         downloaded=0
                         for chunk in r.iter_content(chunk_size=1024*1024):
                             if chunk:
-                                tfile.write(chunk); downloaded+=len(chunk)
-                                if total_size: progress_dl.progress(min(downloaded/total_size,1.0), text=f"⬇️ {downloaded//(1024*1024)} MB / {total_size//(1024*1024)} MB")
+                                tfile.write(chunk);downloaded+=len(chunk)
+                                if total_size: progress_dl.progress(min(downloaded/total_size,1.0),text=f"⬇️ {downloaded//(1024*1024)} MB / {total_size//(1024*1024)} MB")
                         tfile.flush()
-                    progress_dl.progress(1.0, text="✅ Download complete!")
+                    progress_dl.progress(1.0,text="✅ Download complete!")
                     st.success(f"✅ Video downloaded ({downloaded//(1024*1024)} MB)")
                 except Exception as e:
-                    st.error(f"❌ Download failed: {e}"); st.stop()
-                with st.spinner("🧠 Loading model..."): model = load_model()
-                out_path, all_classes, total_det = process_video(tfile.name, model)
-                cap2 = cv2.VideoCapture(tfile.name)
-                total_frames = int(cap2.get(cv2.CAP_PROP_FRAME_COUNT)); cap2.release()
-                show_video_summary(out_path, all_classes, total_det, total_frames, "url_video.mp4")
+                    st.error(f"❌ Download failed: {e}");st.stop()
+                with st.spinner("🧠 Loading model..."): model=load_model()
+                out_path,all_classes,total_det=process_video(tfile.name,model)
+                cap2=cv2.VideoCapture(tfile.name)
+                total_frames=int(cap2.get(cv2.CAP_PROP_FRAME_COUNT));cap2.release()
+                show_video_summary(out_path,all_classes,total_det,total_frames,"url_video.mp4")
                 try: os.unlink(tfile.name)
                 except: pass
 
 # ── Tab 3: Sample Images ──────────────────────────────────────
 with tab3:
-    choice = st.selectbox("Select a sample image:", list(SAMPLE_IMAGES.keys()))
-    if st.button("📥 Load Sample Image", width="stretch"):
+    choice=st.selectbox("Select a sample image:",list(SAMPLE_IMAGES.keys()))
+    if st.button("📥 Load Sample Image",width="stretch"):
         try:
             with st.spinner("Loading sample image..."):
-                r = requests.get(SAMPLE_IMAGES[choice], timeout=10)
-                img = Image.open(BytesIO(r.content)).convert("RGB")
-            st.session_state['pil_image']  = img
-            st.session_state['result_img'] = None
-            st.session_state['results']    = None
+                r=requests.get(SAMPLE_IMAGES[choice],timeout=10)
+                img=Image.open(BytesIO(r.content)).convert("RGB")
+            st.session_state['pil_image']=img
+            st.session_state['result_img']=None
+            st.session_state['results']=None
             st.success(f"✅ Sample loaded! ({img.size[0]}×{img.size[1]}px)")
-            st.image(img, width="stretch")
+            st.image(img,width="stretch")
         except Exception as e:
             st.error(f"❌ Failed to load sample: {e}")
 
 # ── Tab 4: Webcam ─────────────────────────────────────────────
 with tab4:
-    if not RUNNING_LOCAL:
-        st.markdown("""<div class="cloud-box">
+    st.markdown("""<div class="cloud-box">
 <h2>📸 Webcam — Photo Mode</h2>
-<p style="color:#64748b;font-size:1rem;">Take a photo using your camera.<br>Mask R-CNN detection will run automatically.</p>
-</div>""", unsafe_allow_html=True)
-        camera_img = st.camera_input("Click the button to capture a photo")
+<p style="color:#64748b;font-size:1rem;">
+Click <b>Open Camera</b> to activate your webcam.<br>
+The camera will close automatically once a photo is taken.
+</p>
+</div>""",unsafe_allow_html=True)
+
+    col1,col2=st.columns(2)
+    open_btn =col1.button("📷 Open Camera", type="primary", width="stretch",
+                           disabled=st.session_state['camera_active'])
+    close_btn=col2.button("✖️ Close Camera", width="stretch",
+                           disabled=not st.session_state['camera_active'])
+
+    if open_btn:
+        st.session_state['camera_active']=True
+        st.rerun()
+    if close_btn:
+        st.session_state['camera_active']=False
+        st.rerun()
+
+    if st.session_state['camera_active']:
+        camera_img=st.camera_input("📷 Capture a photo for detection")
         if camera_img is not None:
-            pil_cam = Image.open(camera_img).convert("RGB")
-            with st.spinner("🧠 Loading model..."): model = load_model()
-            with st.spinner("⚡ Running inference..."): cam_results = run_inference(model, pil_cam, score_thr)
+            # Auto-close camera after photo is taken
+            st.session_state['camera_active']=False
+            pil_cam=Image.open(camera_img).convert("RGB")
+            with st.spinner("🧠 Loading model..."): model=load_model()
+            with st.spinner("⚡ Running inference..."): cam_results=run_inference(model,pil_cam,score_thr)
             with st.spinner("🎨 Rendering results..."):
-                cam_output, cam_n = draw_results(pil_cam, cam_results, mask_thr=mask_thr, show_masks=show_masks, show_boxes=show_boxes, show_labels=show_labels, alpha=alpha)
-            c1,c2 = st.columns(2)
-            with c1: st.markdown("**📷 Original Photo**"); st.image(pil_cam, width="stretch")
-            with c2: st.markdown(f"**🎭 Detection Result — {cam_n} object(s)**"); st.image(cam_output, width="stretch")
-            buf=BytesIO(); Image.fromarray(cam_output).save(buf, format="PNG")
-            st.download_button("⬇️ Download Result", buf.getvalue(), "webcam_result.png", "image/png", width="stretch")
-            st.markdown("---"); show_result_details(cam_results, cam_n, score_thr)
+                cam_output,cam_n=draw_results(pil_cam,cam_results,mask_thr=mask_thr,
+                    show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
+            c1,c2=st.columns(2)
+            with c1: st.markdown("**📷 Original Photo**"); st.image(pil_cam,width="stretch")
+            with c2: st.markdown(f"**🎭 Detection Result — {cam_n} object(s)**"); st.image(cam_output,width="stretch")
+            buf=BytesIO(); Image.fromarray(cam_output).save(buf,format="PNG")
+            st.download_button("⬇️ Download Result",buf.getvalue(),"webcam_result.png","image/png",width="stretch")
+            st.markdown("---")
+            show_result_details(cam_results,cam_n,score_thr)
+
+    # Live Video — Local only
+    if RUNNING_LOCAL:
         st.markdown("---")
-        with st.expander("🎥 How to run Live Video Detection? (Local Setup Guide)"):
-            st.markdown("""
-Live video detection is only available on a local machine.
+        st.markdown('<div class="local-box"><h3>🎥 Live Video Detection <span style="font-size:0.8rem;color:#64748b;">(Local Only)</span></h3></div>',unsafe_allow_html=True)
+        col1,col2=st.columns(2)
+        start_btn=col1.button("▶️ Start Detection",type="primary",width="stretch")
+        stop_btn=col2.button("⏹️ Stop",width="stretch")
+        if start_btn: st.session_state.live_on=True
+        if stop_btn:  st.session_state.live_on=False
+        if st.session_state.live_on:
+            st.markdown('<span class="live-badge">● LIVE</span>',unsafe_allow_html=True)
+            frame_ph=st.empty(); stats_ph=st.empty()
+            with st.spinner("🧠 Loading model..."): model=load_model()
+            cap=cv2.VideoCapture(0)
+            if not cap.isOpened():
+                st.error("❌ Could not open webcam!")
+                st.session_state.live_on=False
+            else:
+                frame_count=0
+                while True:
+                    if not st.session_state.get('live_on',False): break
+                    ret,frame=cap.read()
+                    if not ret: break
+                    frame_rgb=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+                    pil_f=Image.fromarray(frame_rgb)
+                    res=run_inference(model,pil_f,score_thr)
+                    out_f,nd=draw_results(pil_f,res,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
+                    frame_ph.image(out_f,caption=f"Frame #{frame_count} — {nd} object(s)",width="stretch")
+                    detected=list(set([COCO_CLASSES.get(int(l),'?') for l in res['labels']]))
+                    stats_ph.markdown(f"🎯 **{nd}** object(s) &nbsp;|&nbsp; ⚡ **{res['time']*1000:.0f}ms** &nbsp;|&nbsp; 🏷️ {', '.join(detected[:4]) or 'None'}")
+                    frame_count+=1
+                cap.release()
+                st.info("⏹️ Live detection stopped.")
+
+    st.markdown("---")
+    with st.expander("ℹ️ How to run Live Video Detection? (Local Setup Guide)"):
+        st.markdown("""
+Live video detection is only available when running locally.
 ```bash
 pip install streamlit torch torchvision opencv-python pillow requests pandas matplotlib imageio imageio-ffmpeg
 streamlit run app.py
 ```
 Open `http://localhost:8501` → Webcam tab → Live Video → ▶️ Start
-            """)
-    else:
-        st.markdown('<div class="info-box">🖥️ <b>Local mode detected!</b> Both webcam modes are available.</div>', unsafe_allow_html=True)
-        webcam_mode = st.radio("Select Mode:", ["📸 Single Photo","🎥 Live Video"], horizontal=True)
-        if webcam_mode == "📸 Single Photo":
-            camera_img = st.camera_input("Click to capture a photo")
-            if camera_img is not None:
-                pil_cam = Image.open(camera_img).convert("RGB")
-                with st.spinner("🧠 Loading model..."): model = load_model()
-                with st.spinner("⚡ Running inference..."): cam_results = run_inference(model, pil_cam, score_thr)
-                with st.spinner("🎨 Rendering results..."):
-                    cam_output, cam_n = draw_results(pil_cam, cam_results, mask_thr=mask_thr, show_masks=show_masks, show_boxes=show_boxes, show_labels=show_labels, alpha=alpha)
-                c1,c2=st.columns(2)
-                with c1: st.markdown("**📷 Original**"); st.image(pil_cam, width="stretch")
-                with c2: st.markdown(f"**🎭 {cam_n} object(s) detected**"); st.image(cam_output, width="stretch")
-                buf=BytesIO(); Image.fromarray(cam_output).save(buf, format="PNG")
-                st.download_button("⬇️ Download Result", buf.getvalue(), "photo_result.png", "image/png", width="stretch")
-                st.markdown("---"); show_result_details(cam_results, cam_n, score_thr)
-        else:
-            st.markdown('<div class="local-box"><h3>🎥 Live Video Detection</h3><p style="color:#64748b;">Real-time object detection via webcam</p></div>', unsafe_allow_html=True)
-            col1,col2=st.columns(2)
-            start_btn=col1.button("▶️ Start Detection", type="primary", width="stretch")
-            stop_btn=col2.button("⏹️ Stop", width="stretch")
-            if start_btn: st.session_state.live_on=True
-            if stop_btn:  st.session_state.live_on=False
-            if st.session_state.live_on:
-                st.markdown('<span class="live-badge">● LIVE</span>', unsafe_allow_html=True)
-                frame_ph=st.empty(); stats_ph=st.empty()
-                with st.spinner("🧠 Loading model..."): model=load_model()
-                cap=cv2.VideoCapture(0)
-                if not cap.isOpened():
-                    st.error("❌ Could not open webcam!"); st.session_state.live_on=False
-                else:
-                    frame_count=0
-                    while st.session_state.live_on:
-                        ret,frame=cap.read()
-                        if not ret: break
-                        frame_rgb=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-                        pil_f=Image.fromarray(frame_rgb)
-                        res=run_inference(model,pil_f,score_thr)
-                        out_f,nd=draw_results(pil_f,res,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
-                        frame_ph.image(out_f,caption=f"Frame #{frame_count} — {nd} object(s) detected",width="stretch")
-                        detected=list(set([COCO_CLASSES.get(int(l),'?') for l in res['labels']]))
-                        stats_ph.markdown(f"🎯 **{nd}** object(s) &nbsp;|&nbsp; ⚡ **{res['time']*1000:.0f}ms** &nbsp;|&nbsp; 🏷️ {', '.join(detected[:4]) or 'None'}")
-                        frame_count+=1
-                        if not st.session_state.live_on: break
-                    cap.release(); st.info("⏹️ Live detection stopped.")
+        """)
 
 # ── Run Detection ─────────────────────────────────────────────
-pil_image = st.session_state.get('pil_image', None)
+pil_image=st.session_state.get('pil_image',None)
 if pil_image is not None:
     st.markdown("---")
     st.markdown("### 🔮 Run Object Detection")
     if st.session_state['result_img'] is not None:
         left,right=st.columns(2)
-        with left:
-            st.markdown("**🖼️ Original Image**"); st.image(pil_image, width="stretch")
-        with right:
-            st.markdown(f"**🎭 Detection Result — {st.session_state['n_det']} instance(s)**")
-            st.image(st.session_state['result_img'], width="stretch")
-        buf=BytesIO(); Image.fromarray(st.session_state['result_img']).save(buf, format="PNG")
-        st.download_button("⬇️ Download Result", buf.getvalue(), "mask_rcnn_output.png", "image/png", width="stretch")
+        with left: st.markdown("**🖼️ Original Image**"); st.image(pil_image,width="stretch")
+        with right: st.markdown(f"**🎭 Detection Result — {st.session_state['n_det']} instance(s)**"); st.image(st.session_state['result_img'],width="stretch")
+        buf=BytesIO(); Image.fromarray(st.session_state['result_img']).save(buf,format="PNG")
+        st.download_button("⬇️ Download Result",buf.getvalue(),"mask_rcnn_output.png","image/png",width="stretch")
         st.markdown("---")
-        show_result_details(st.session_state['results'], st.session_state['n_det'], score_thr)
+        show_result_details(st.session_state['results'],st.session_state['n_det'],score_thr)
         st.markdown("---")
-    if st.button("🚀 Run Mask R-CNN Detection", type="primary", width="stretch"):
+    if st.button("🚀 Run Mask R-CNN Detection",type="primary",width="stretch"):
         with st.spinner("🧠 Loading model..."): model=load_model()
-        with st.spinner("⚡ Running inference..."): results=run_inference(model, pil_image, score_thr)
+        with st.spinner("⚡ Running inference..."): results=run_inference(model,pil_image,score_thr)
         with st.spinner("🎨 Rendering results..."):
-            output_img,n_det=draw_results(pil_image, results, mask_thr=mask_thr, show_masks=show_masks, show_boxes=show_boxes, show_labels=show_labels, alpha=alpha)
+            output_img,n_det=draw_results(pil_image,results,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
         st.session_state['result_img']=output_img
         st.session_state['results']=results
         st.session_state['n_det']=n_det
@@ -631,8 +623,7 @@ with c1:
 - Draws a **bounding box** around each detected object
 - Generates a **pixel-level instance mask** for each object
 
-**Architecture Pipeline:**
-ResNet-50 → FPN → RPN → RoI Align → 3 Prediction Heads (class + box + mask)
+**Architecture:** ResNet-50 → FPN → RPN → RoI Align → 3 Prediction Heads
 
 **Reference:** He et al., *Mask R-CNN*, ICCV 2017
         """)
@@ -648,15 +639,15 @@ with c2:
 | Parameters | ~44 Million |
 | Inference Device | `{str(device).upper()}` |
 | Video Detection | ✅ Upload + URL |
-| Webcam | ✅ Photo + Live Video |
+| Webcam | ✅ Photo + Live (Local) |
         """)
 with st.expander("🏷️ All 80 COCO Object Categories"):
     cols=st.columns(5)
     for i,cls in enumerate(COCO_CLASSES.values()):
-        cols[i%5].markdown(f"<span class='tag'>{cls}</span>", unsafe_allow_html=True)
+        cols[i%5].markdown(f"<span class='tag'>{cls}</span>",unsafe_allow_html=True)
 
 st.markdown("---")
 st.markdown("""<div class="footer">
     🎭 Mask R-CNN Instance Segmentation &nbsp;·&nbsp; Built with Streamlit &nbsp;·&nbsp;
     MS-COCO 2017 Pre-trained &nbsp;·&nbsp; 📁 Image &nbsp;+&nbsp; 🎬 Video &nbsp;+&nbsp; 📷 Webcam
-</div>""", unsafe_allow_html=True)
+</div>""",unsafe_allow_html=True)
