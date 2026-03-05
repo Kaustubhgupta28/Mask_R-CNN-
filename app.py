@@ -36,7 +36,404 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# No custom CSS — using Streamlit default theme
+# ─────────────────────────────────────────────────────────────
+# NEURAL NETWORK ANIMATED CSS
+# ─────────────────────────────────────────────────────────────
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+
+/* ── DARK BACKGROUND ── */
+.stApp {
+    background: #020917 !important;
+    color: #e2e8f0 !important;
+}
+
+/* ── NEURAL CANVAS ANIMATION ── */
+#neural-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* ── MAIN CONTENT ABOVE CANVAS ── */
+.main .block-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* ── SIDEBAR ── */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #040d1f 0%, #050f24 100%) !important;
+    border-right: 1px solid rgba(0,212,255,0.2) !important;
+}
+section[data-testid="stSidebar"] * { color: #94a3b8 !important; }
+section[data-testid="stSidebar"] h2, 
+section[data-testid="stSidebar"] .sidebar-title { color: #00d4ff !important; }
+
+/* ── HEADER 3D ── */
+.neural-header {
+    background: linear-gradient(135deg, rgba(0,20,50,0.95), rgba(5,15,40,0.95));
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 20px;
+    padding: 36px 44px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    box-shadow:
+        0 0 40px rgba(0,212,255,0.15),
+        0 0 80px rgba(0,100,255,0.08),
+        inset 0 1px 0 rgba(0,212,255,0.2);
+    animation: headerFloat 6s ease-in-out infinite;
+}
+@keyframes headerFloat {
+    0%,100% { transform: translateY(0px) rotateX(0deg); box-shadow: 0 0 40px rgba(0,212,255,0.15), 0 20px 60px rgba(0,100,255,0.1); }
+    50%      { transform: translateY(-6px) rotateX(1deg); box-shadow: 0 0 60px rgba(0,212,255,0.25), 0 30px 80px rgba(0,100,255,0.15); }
+}
+.neural-header::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: conic-gradient(transparent, rgba(0,212,255,0.03), transparent 30%);
+    animation: rotate 8s linear infinite;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+.neural-header::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.05), transparent);
+    animation: shimmer 4s ease-in-out infinite;
+}
+@keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
+
+/* ── TITLE ── */
+.main-title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #00d4ff 0%, #7b2fff 50%, #00d4ff 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleShine 3s linear infinite;
+    margin-bottom: 0;
+    line-height: 1.2;
+    text-shadow: none;
+}
+@keyframes titleShine { to { background-position: 200% center; } }
+.subtitle { color: #64748b; font-size: 1rem; margin-top: 8px; }
+
+/* ── GLOWING BADGES ── */
+.badge {
+    display: inline-block;
+    background: rgba(0,212,255,0.08);
+    color: #00d4ff;
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 3px;
+    box-shadow: 0 0 10px rgba(0,212,255,0.15);
+    animation: badgePulse 2s ease-in-out infinite;
+}
+@keyframes badgePulse {
+    0%,100% { box-shadow: 0 0 8px rgba(0,212,255,0.15); }
+    50%      { box-shadow: 0 0 18px rgba(0,212,255,0.4); }
+}
+
+/* ── GLOWING CARDS ── */
+.metric-card {
+    background: rgba(0,20,50,0.8);
+    border-radius: 16px;
+    padding: 20px 24px;
+    border: 1px solid rgba(0,212,255,0.2);
+    box-shadow: 0 0 20px rgba(0,212,255,0.08);
+    text-align: center;
+    margin: 6px 0;
+    transition: all 0.3s ease;
+    animation: cardGlow 3s ease-in-out infinite;
+}
+.metric-card:hover {
+    border-color: rgba(0,212,255,0.6);
+    box-shadow: 0 0 30px rgba(0,212,255,0.3);
+    transform: translateY(-4px);
+}
+@keyframes cardGlow {
+    0%,100% { box-shadow: 0 0 15px rgba(0,212,255,0.08); }
+    50%      { box-shadow: 0 0 25px rgba(0,212,255,0.18); }
+}
+.metric-val { font-size: 2rem; font-weight: 800; color: #00d4ff; line-height: 1.2; }
+.metric-lbl { font-size: 0.78rem; color: #475569; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+/* ── TABS ── */
+div[data-testid="stTabs"] button {
+    background: rgba(0,20,50,0.8) !important;
+    border-radius: 10px 10px 0 0 !important;
+    color: #64748b !important;
+    font-weight: 600 !important;
+    border: 1px solid rgba(0,212,255,0.15) !important;
+    transition: all 0.3s !important;
+}
+div[data-testid="stTabs"] button:hover {
+    color: #00d4ff !important;
+    border-color: rgba(0,212,255,0.4) !important;
+}
+div[data-testid="stTabs"] button[aria-selected="true"] {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,47,255,0.15)) !important;
+    color: #00d4ff !important;
+    border-color: rgba(0,212,255,0.5) !important;
+    box-shadow: 0 0 15px rgba(0,212,255,0.2) !important;
+}
+
+/* ── FILE UPLOADER ── */
+div[data-testid="stFileUploader"] {
+    background: rgba(0,20,50,0.6) !important;
+    border: 2px dashed rgba(0,212,255,0.3) !important;
+    border-radius: 14px !important;
+    transition: all 0.3s !important;
+}
+div[data-testid="stFileUploader"]:hover {
+    border-color: rgba(0,212,255,0.7) !important;
+    box-shadow: 0 0 20px rgba(0,212,255,0.15) !important;
+}
+
+/* ── EXPANDERS ── */
+div[data-testid="stExpander"] {
+    background: rgba(0,20,50,0.7) !important;
+    border: 1px solid rgba(0,212,255,0.2) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s !important;
+}
+div[data-testid="stExpander"]:hover {
+    border-color: rgba(0,212,255,0.4) !important;
+    box-shadow: 0 0 15px rgba(0,212,255,0.1) !important;
+}
+
+/* ── BUTTONS ── */
+div[data-testid="stButton"] button[kind="primary"] {
+    background: linear-gradient(135deg, #00d4ff, #7b2fff) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+    color: white !important;
+    box-shadow: 0 0 20px rgba(0,212,255,0.4) !important;
+    transition: all 0.3s !important;
+    animation: btnPulse 2s ease-in-out infinite !important;
+}
+div[data-testid="stButton"] button[kind="primary"]:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 35px rgba(0,212,255,0.6) !important;
+}
+@keyframes btnPulse {
+    0%,100% { box-shadow: 0 0 20px rgba(0,212,255,0.4); }
+    50%      { box-shadow: 0 0 35px rgba(0,212,255,0.7); }
+}
+
+/* ── TEXT COLOR FIX ── */
+.stMarkdown, p, label, .stText { color: #94a3b8 !important; }
+h1, h2, h3, h4 { color: #e2e8f0 !important; }
+
+/* ── SELECTBOX ── */
+div[data-testid="stSelectbox"] > div > div {
+    background: rgba(0,20,50,0.8) !important;
+    border: 1px solid rgba(0,212,255,0.3) !important;
+    border-radius: 10px !important;
+    color: #e2e8f0 !important;
+}
+
+/* ── SLIDERS ── */
+div[data-testid="stSlider"] div[role="slider"] {
+    background: #00d4ff !important;
+    box-shadow: 0 0 10px rgba(0,212,255,0.6) !important;
+}
+
+/* ── INFO BOX ── */
+.info-box {
+    background: rgba(0,212,255,0.06);
+    border-left: 3px solid #00d4ff;
+    border-radius: 10px;
+    padding: 14px 18px;
+    color: #94a3b8;
+    margin: 10px 0;
+    box-shadow: 0 0 15px rgba(0,212,255,0.08);
+}
+.cloud-box {
+    background: rgba(0,20,50,0.8);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    margin: 10px 0;
+    box-shadow: 0 0 20px rgba(0,212,255,0.1);
+}
+.local-box {
+    background: rgba(0,20,50,0.8);
+    border: 2px dashed rgba(0,212,255,0.4);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* ── LIVE BADGE ── */
+.live-badge {
+    display: inline-block;
+    background: #ef4444;
+    color: white;
+    border-radius: 999px;
+    padding: 3px 14px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 0 15px rgba(239,68,68,0.6);
+    animation: blink 1.2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── TAGS ── */
+.tag {
+    display: inline-block;
+    background: rgba(0,212,255,0.08);
+    color: #00d4ff;
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin: 2px;
+}
+
+/* ── FOOTER ── */
+.footer {
+    text-align: center;
+    color: #334155;
+    font-size: 0.8rem;
+    padding: 20px 0;
+}
+
+/* ── FLOATING PARTICLES ── */
+.particle {
+    position: fixed;
+    width: 3px; height: 3px;
+    background: #00d4ff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    animation: floatUp linear infinite;
+    box-shadow: 0 0 6px #00d4ff;
+}
+@keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0); opacity:0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+}
+
+/* ── DATAFRAME ── */
+div[data-testid="stDataFrame"] {
+    border: 1px solid rgba(0,212,255,0.2) !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+</style>
+
+<!-- Neural Network Canvas -->
+<canvas id="neural-canvas"></canvas>
+
+<!-- Floating Particles -->
+<div id="particles-container"></div>
+
+<script>
+// ── Neural Network Animation ──────────────────────────────
+(function() {
+    const canvas = document.getElementById('neural-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const nodes = Array.from({length: 40}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 2.5 + 1.5,
+        pulse: Math.random() * Math.PI * 2
+    }));
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        nodes.forEach(n => {
+            n.x += n.vx;
+            n.y += n.vy;
+            n.pulse += 0.02;
+            if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+            if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+        });
+
+        // Draw connections
+        nodes.forEach((a, i) => {
+            nodes.slice(i + 1).forEach(b => {
+                const d = Math.hypot(a.x - b.x, a.y - b.y);
+                if (d < 130) {
+                    const alpha = Math.floor((1 - d / 130) * 60).toString(16).padStart(2, '0');
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#00d4ff' + alpha;
+                    ctx.lineWidth = 0.6;
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b.x, b.y);
+                    ctx.stroke();
+                }
+            });
+        });
+
+        // Draw nodes
+        nodes.forEach(n => {
+            const glow = Math.sin(n.pulse) * 0.5 + 0.5;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.r + glow, 0, Math.PI * 2);
+            ctx.fillStyle = '#00d4ff';
+            ctx.shadowBlur = 12 + glow * 8;
+            ctx.shadowColor = '#00d4ff';
+            ctx.fill();
+        });
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+
+// ── Floating Particles ────────────────────────────────────
+(function() {
+    const container = document.getElementById('particles-container');
+    if (!container) return;
+    
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = (Math.random() * 10 + 8) + 's';
+        p.style.animationDelay = (Math.random() * 10) + 's';
+        p.style.width = p.style.height = (Math.random() * 3 + 1) + 'px';
+        p.style.opacity = Math.random() * 0.6 + 0.2;
+        container.appendChild(p);
+    }
+})();
+</script>
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────────────────────
 # CHECK LOCAL / CLOUD
@@ -138,13 +535,21 @@ def show_result_details(results, n_det, score_thr):
 env_icon  = "🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
 env_color = "#16a34a"       if RUNNING_LOCAL else "#7c3aed"
 
-# HEADER
-st.title("🎭 Mask R-CNN Instance Segmentation")
-st.caption("ResNet-50 FPN · MS-COCO 2017 Pretrained · 80 Object Categories · Image + Webcam")
-if RUNNING_LOCAL:
-    st.success("🖥️ Local mode — Webcam Live Video available!")
-else:
-    st.info("☁️ Cloud mode — Webcam Photo mode available!")
+# HEADER — 3D Neural Style
+env_icon  = "🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
+st.markdown(f"""
+<div class="neural-header">
+    <p class="main-title">🎭 Mask R-CNN</p>
+    <p class="main-title" style="font-size:1.5rem; margin-top:-6px;">Instance Segmentation</p>
+    <p class="subtitle">ResNet-50 FPN &nbsp;·&nbsp; MS-COCO 2017 Pretrained &nbsp;·&nbsp; 80 Object Categories &nbsp;·&nbsp; Image + Webcam</p>
+    <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="badge">🧠 ResNet-50 FPN</span>
+        <span class="badge">📦 MS-COCO 2017</span>
+        <span class="badge">🏷️ 80 Categories</span>
+        <span class="badge">{env_icon}</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 st.markdown("---")
 
 # ─────────────────────────────────────────────────────────────
