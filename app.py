@@ -204,6 +204,22 @@ div[data-testid="stFileUploader"]:hover {
     border-color: rgba(0,212,255,0.7) !important;
     box-shadow: 0 0 20px rgba(0,212,255,0.15) !important;
 }
+/* Inner white box fix */
+div[data-testid="stFileUploader"] > div {
+    background: rgba(0,15,40,0.8) !important;
+    border-radius: 10px !important;
+}
+div[data-testid="stFileUploader"] span,
+div[data-testid="stFileUploader"] p,
+div[data-testid="stFileUploader"] small {
+    color: #64748b !important;
+}
+div[data-testid="stFileUploader"] button {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,47,255,0.15)) !important;
+    color: #00d4ff !important;
+    border: 1px solid rgba(0,212,255,0.4) !important;
+    border-radius: 8px !important;
+}
 
 /* ── EXPANDERS ── */
 div[data-testid="stExpander"] {
