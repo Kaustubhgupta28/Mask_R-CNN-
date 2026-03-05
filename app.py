@@ -797,16 +797,184 @@ Processing ke baad <b>output video download</b> kar sakte ho.
                 os.unlink(tfile.name)
 
 with tab2:
-    url = st.text_input("Image URL paste karo:", placeholder="https://example.com/photo.jpg")
+    url = st.text_input(
+        "🔗 Image ya Video URL paste karo:",
+        placeholder="https://example.com/photo.jpg  ya  https://example.com/video.mp4"
+    )
+
     if url:
-        try:
-            with st.spinner("Downloading..."):
-                r = requests.get(url, timeout=10)
-                pil_image = Image.open(BytesIO(r.content)).convert("RGB")
-            st.success(f"✅ Downloaded! ({pil_image.size[0]}×{pil_image.size[1]}px)")
-            st.image(pil_image, use_container_width=True)
-        except Exception as e:
-            st.error(f"❌ Load nahi hui: {e}")
+        # ── Detect type from URL extension ──────────────────
+        video_exts = (".mp4", ".avi", ".mov", ".mkv", ".webm")
+        is_video   = any(url.lower().split("?")[0].endswith(ext) for ext in video_exts)
+
+        # ══════════════════════════════════════════
+        # IMAGE URL
+        # ══════════════════════════════════════════
+        if not is_video:
+            try:
+                with st.spinner("⬇️ Image download ho rahi hai..."):
+                    r = requests.get(url, timeout=10)
+                    pil_image = Image.open(BytesIO(r.content)).convert("RGB")
+                st.success(f"✅ Downloaded! ({pil_image.size[0]}×{pil_image.size[1]}px)")
+                st.image(pil_image, use_container_width=True)
+            except Exception as e:
+                st.error(f"❌ Image load nahi hui: {e}")
+
+        # ══════════════════════════════════════════
+        # VIDEO URL
+        # ══════════════════════════════════════════
+        else:
+            st.markdown(f"""
+<div class="info-box">
+🎬 <b>Video URL detect hua!</b><br>
+<span style="color:#00d4ff; font-size:0.85rem;">{url}</span>
+</div>
+""", unsafe_allow_html=True)
+
+            if st.button("⬇️ Download & Process Video", type="primary", use_container_width=True):
+                import tempfile, time
+
+                # ── Download video ──────────────────────────
+                progress_dl = st.progress(0, text="⬇️ Video download ho rahi hai...")
+                try:
+                    with requests.get(url, stream=True, timeout=60) as r:
+                        r.raise_for_status()
+                        total_size = int(r.headers.get('content-length', 0))
+                        tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+                        downloaded = 0
+                        for chunk in r.iter_content(chunk_size=1024 * 1024):
+                            tfile.write(chunk)
+                            downloaded += len(chunk)
+                            if total_size:
+                                progress_dl.progress(
+                                    min(downloaded / total_size, 1.0),
+                                    text=f"⬇️ {downloaded // (1024*1024)}MB / {total_size // (1024*1024)}MB"
+                                )
+                        tfile.flush()
+                    progress_dl.progress(1.0, text="✅ Download complete!")
+                    st.success(f"✅ Video download ho gayi! ({downloaded // (1024*1024)} MB)")
+
+                except Exception as e:
+                    st.error(f"❌ Video download nahi hui: {e}")
+                    st.stop()
+
+                # ── Load model ──────────────────────────────
+                with st.spinner("🧠 Model load ho raha hai..."):
+                    model = load_model()
+
+                # ── Open video ──────────────────────────────
+                cap          = cv2.VideoCapture(tfile.name)
+                total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                fps          = cap.get(cv2.CAP_PROP_FPS) or 25
+                width        = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height       = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+                st.markdown(f"""
+<div class="metric-card" style="text-align:left; padding:14px 20px; margin:10px 0;">
+<span style="color:#64748b; font-size:0.85rem;">
+📹 <b style="color:#00d4ff;">{total_frames}</b> frames &nbsp;·&nbsp;
+🎞️ <b style="color:#00d4ff;">{fps:.1f}</b> FPS &nbsp;·&nbsp;
+📐 <b style="color:#00d4ff;">{width}×{height}</b>px
+</span>
+</div>
+""", unsafe_allow_html=True)
+
+                # ── Output writer ───────────────────────────
+                out_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
+                fourcc   = cv2.VideoWriter_fourcc(*'mp4v')
+                writer   = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+
+                # ── Processing loop ─────────────────────────
+                progress_bar = st.progress(0, text="⏳ Processing frames...")
+                preview_ph   = st.empty()
+                stats_ph     = st.empty()
+
+                frame_idx   = 0
+                total_det   = 0
+                all_classes = {}
+                start_time  = time.time()
+
+                while True:
+                    ret, frame = cap.read()
+                    if not ret:
+                        break
+
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    pil_f     = Image.fromarray(frame_rgb)
+
+                    res       = run_inference(model, pil_f, score_thr)
+                    out_f, nd = draw_results(
+                        pil_f, res,
+                        mask_thr=mask_thr, show_masks=show_masks,
+                        show_boxes=show_boxes, show_labels=show_labels, alpha=alpha
+                    )
+
+                    out_bgr = cv2.cvtColor(out_f, cv2.COLOR_RGB2BGR)
+                    writer.write(out_bgr)
+
+                    total_det += nd
+                    for lbl in res['labels']:
+                        cname = COCO_CLASSES.get(int(lbl), '?')
+                        all_classes[cname] = all_classes.get(cname, 0) + 1
+
+                    frame_idx += 1
+                    elapsed    = time.time() - start_time
+                    eta        = (elapsed / frame_idx) * (total_frames - frame_idx) if frame_idx > 0 else 0
+
+                    progress_bar.progress(
+                        min(frame_idx / max(total_frames, 1), 1.0),
+                        text=f"⏳ Frame {frame_idx}/{total_frames} — ETA: {eta:.0f}s"
+                    )
+
+                    if frame_idx % 10 == 0:
+                        preview_ph.image(out_f,
+                            caption=f"🎬 Frame #{frame_idx} — {nd} objects",
+                            use_container_width=True)
+                        stats_ph.markdown(f"""
+| | |
+|---|---|
+| 🎯 Frame | **{frame_idx} / {total_frames}** |
+| 🔍 Detections (this frame) | **{nd}** |
+| 📊 Total detections | **{total_det}** |
+| ⏱️ Elapsed | **{elapsed:.1f}s** |
+| 🏷️ Classes | **{', '.join(list(all_classes.keys())[:5])}{'...' if len(all_classes) > 5 else ''}** |
+""")
+
+                cap.release()
+                writer.release()
+                progress_bar.progress(1.0, text="✅ Processing complete!")
+
+                # ── Summary ─────────────────────────────────
+                st.markdown("---")
+                st.markdown("### 📊 Video Detection Summary")
+                sc1, sc2, sc3 = st.columns(3)
+                sc1.markdown(f'<div class="metric-card"><div class="metric-val">{total_frames}</div><div class="metric-lbl">Total Frames</div></div>', unsafe_allow_html=True)
+                sc2.markdown(f'<div class="metric-card"><div class="metric-val">{total_det}</div><div class="metric-lbl">Total Detections</div></div>', unsafe_allow_html=True)
+                sc3.markdown(f'<div class="metric-card"><div class="metric-val">{total_det//max(total_frames,1)}</div><div class="metric-lbl">Avg per Frame</div></div>', unsafe_allow_html=True)
+
+                if all_classes:
+                    st.markdown("#### 🏷️ Classes Detected")
+                    cls_df = pd.DataFrame(
+                        sorted(all_classes.items(), key=lambda x: -x[1]),
+                        columns=["Class", "Total Detections"]
+                    )
+                    st.dataframe(cls_df, use_container_width=True, hide_index=True)
+
+                # ── Download ─────────────────────────────────
+                st.markdown("---")
+                with open(out_path, "rb") as f:
+                    video_bytes = f.read()
+
+                st.download_button(
+                    label="⬇️ Download Output Video",
+                    data=video_bytes,
+                    file_name="mask_rcnn_url_video.mp4",
+                    mime="video/mp4",
+                    use_container_width=True,
+                    type="primary"
+                )
+
+                os.unlink(tfile.name)
 
 with tab3:
     choice = st.selectbox("Sample choose karo:", list(SAMPLE_IMAGES.keys()))
