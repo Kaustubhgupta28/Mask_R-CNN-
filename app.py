@@ -64,8 +64,8 @@ section[data-testid="stSidebar"] h2 { color:#00d4ff !important; }
     animation:headerFloat 6s ease-in-out infinite;
 }
 @keyframes headerFloat {
-    0%,100%{transform:translateY(0px);box-shadow:0 0 40px rgba(0,212,255,0.15),0 20px 60px rgba(0,100,255,0.1);}
-    50%{transform:translateY(-6px);box-shadow:0 0 60px rgba(0,212,255,0.25),0 30px 80px rgba(0,100,255,0.15);}
+    0%,100%{transform:translateY(0px);}
+    50%{transform:translateY(-6px);}
 }
 .neural-header::before {
     content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
@@ -97,18 +97,13 @@ section[data-testid="stSidebar"] h2 { color:#00d4ff !important; }
 .metric-card {
     background:rgba(0,20,50,0.8);border-radius:16px;padding:20px 24px;
     border:1px solid rgba(0,212,255,0.2);text-align:center;margin:6px 0;
-    position:relative;overflow:hidden;transform-style:preserve-3d;
-    transition:transform 0.35s ease,box-shadow 0.35s ease;will-change:transform;
+    position:relative;overflow:hidden;
+    transition:transform 0.35s ease,box-shadow 0.35s ease;
     animation:cardGlow 3s ease-in-out infinite;
-}
-.metric-card::after {
-    content:'';position:absolute;inset:0;border-radius:16px;
-    background:linear-gradient(135deg,rgba(255,255,255,0.06) 0%,transparent 50%,rgba(0,212,255,0.04) 100%);
-    pointer-events:none;
 }
 .metric-card:hover {
     transform:translateY(-6px) rotateX(6deg) rotateY(-3deg);
-    box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(0,212,255,0.25),inset 0 1px 0 rgba(0,212,255,0.3) !important;
+    box-shadow:0 20px 40px rgba(0,0,0,0.4),0 0 30px rgba(0,212,255,0.25) !important;
 }
 @keyframes cardGlow{0%,100%{box-shadow:0 0 15px rgba(0,212,255,0.08);}50%{box-shadow:0 0 25px rgba(0,212,255,0.18);}}
 .metric-val{font-size:2rem;font-weight:800;color:#00d4ff;line-height:1.2;}
@@ -116,42 +111,39 @@ section[data-testid="stSidebar"] h2 { color:#00d4ff !important; }
 div[data-testid="stTabs"] button {
     background:rgba(0,20,50,0.8) !important;border-radius:10px 10px 0 0 !important;
     color:#64748b !important;font-weight:600 !important;border:1px solid rgba(0,212,255,0.15) !important;
-    box-shadow:0 4px 8px rgba(0,0,0,0.35),inset 0 1px 0 rgba(0,212,255,0.1) !important;transition:all 0.2s ease !important;
+    transition:all 0.2s ease !important;
 }
-div[data-testid="stTabs"] button:hover{color:#00d4ff !important;transform:translateY(-2px) !important;box-shadow:0 8px 16px rgba(0,0,0,0.4),0 0 12px rgba(0,212,255,0.2) !important;}
+div[data-testid="stTabs"] button:hover{color:#00d4ff !important;transform:translateY(-2px) !important;}
 div[data-testid="stTabs"] button[aria-selected="true"] {
     background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(123,47,255,0.15)) !important;
     color:#00d4ff !important;transform:translateY(-3px) !important;
-    box-shadow:0 8px 20px rgba(0,0,0,0.45),0 0 20px rgba(0,212,255,0.25),inset 0 1px 0 rgba(0,212,255,0.4) !important;
 }
 div[data-testid="stFileUploader"] {
     background:rgba(0,20,50,0.6) !important;border:2px dashed rgba(0,212,255,0.3) !important;
-    border-radius:14px !important;box-shadow:0 4px 20px rgba(0,0,0,0.4),inset 0 1px 0 rgba(0,212,255,0.06) !important;transition:all 0.3s !important;
+    border-radius:14px !important;transition:all 0.3s !important;
 }
-div[data-testid="stFileUploader"]:hover{border-color:rgba(0,212,255,0.7) !important;box-shadow:0 0 20px rgba(0,212,255,0.15) !important;}
+div[data-testid="stFileUploader"]:hover{border-color:rgba(0,212,255,0.7) !important;}
 div[data-testid="stFileUploader"] > div,div[data-testid="stFileUploader"] > div > div,
 div[data-testid="stFileUploader"] section,div[data-testid="stFileUploader"] section > div {
     background:rgba(0,15,40,0.9) !important;background-color:rgba(0,15,40,0.9) !important;border-radius:10px !important;border:none !important;
 }
 div[data-testid="stFileUploader"] span,div[data-testid="stFileUploader"] p,div[data-testid="stFileUploader"] small{color:#64748b !important;}
 div[data-testid="stFileUploader"] button{background:linear-gradient(135deg,rgba(0,212,255,0.15),rgba(123,47,255,0.15)) !important;color:#00d4ff !important;border:1px solid rgba(0,212,255,0.4) !important;border-radius:8px !important;}
-div[data-testid="stExpander"]{background:rgba(0,20,50,0.7) !important;border:1px solid rgba(0,212,255,0.2) !important;border-radius:12px !important;box-shadow:0 4px 16px rgba(0,0,0,0.35),inset 0 1px 0 rgba(0,212,255,0.08) !important;transition:transform 0.25s ease,box-shadow 0.25s ease !important;}
-div[data-testid="stExpander"]:hover{transform:translateY(-2px) !important;border-color:rgba(0,212,255,0.4) !important;box-shadow:0 8px 24px rgba(0,0,0,0.45),0 0 16px rgba(0,212,255,0.12) !important;}
-div[data-testid="stButton"] button[kind="primary"]{background:linear-gradient(135deg,#00d4ff,#7b2fff) !important;border:none !important;border-radius:12px !important;font-weight:700 !important;color:white !important;box-shadow:0 6px 0 rgba(0,100,150,0.6),0 8px 16px rgba(0,0,0,0.4),0 0 20px rgba(0,212,255,0.4) !important;transition:transform 0.1s ease,box-shadow 0.1s ease !important;}
-div[data-testid="stButton"] button[kind="primary"]:hover{transform:translateY(-3px) !important;box-shadow:0 9px 0 rgba(0,100,150,0.5),0 12px 24px rgba(0,0,0,0.5),0 0 35px rgba(0,212,255,0.6) !important;}
-div[data-testid="stButton"] button[kind="primary"]:active{transform:translateY(4px) !important;box-shadow:0 2px 0 rgba(0,100,150,0.6),0 2px 6px rgba(0,0,0,0.3),0 0 10px rgba(0,212,255,0.3) !important;animation:none !important;}
-div[data-testid="stButton"] button:not([kind="primary"]){box-shadow:0 4px 0 rgba(0,50,80,0.7),0 6px 12px rgba(0,0,0,0.3) !important;border-radius:10px !important;transition:transform 0.1s,box-shadow 0.1s !important;}
-div[data-testid="stButton"] button:not([kind="primary"]):hover{transform:translateY(-2px) !important;box-shadow:0 6px 0 rgba(0,50,80,0.6),0 10px 20px rgba(0,0,0,0.3) !important;}
-div[data-testid="stButton"] button:not([kind="primary"]):active{transform:translateY(3px) !important;box-shadow:0 1px 0 rgba(0,50,80,0.7) !important;}
+div[data-testid="stExpander"]{background:rgba(0,20,50,0.7) !important;border:1px solid rgba(0,212,255,0.2) !important;border-radius:12px !important;}
+div[data-testid="stButton"] button[kind="primary"]{background:linear-gradient(135deg,#00d4ff,#7b2fff) !important;border:none !important;border-radius:12px !important;font-weight:700 !important;color:white !important;box-shadow:0 6px 0 rgba(0,100,150,0.6),0 0 20px rgba(0,212,255,0.4) !important;transition:transform 0.1s ease !important;}
+div[data-testid="stButton"] button[kind="primary"]:hover{transform:translateY(-3px) !important;}
+div[data-testid="stButton"] button[kind="primary"]:active{transform:translateY(4px) !important;}
+div[data-testid="stButton"] button:not([kind="primary"]){border-radius:10px !important;transition:transform 0.1s !important;}
+div[data-testid="stButton"] button:not([kind="primary"]):hover{transform:translateY(-2px) !important;}
 .stMarkdown,p,label,.stText{color:#94a3b8 !important;}
 h1,h2,h3,h4{color:#e2e8f0 !important;}
 div[data-testid="stSelectbox"] > div > div{background:rgba(0,20,50,0.8) !important;border:1px solid rgba(0,212,255,0.3) !important;border-radius:10px !important;color:#e2e8f0 !important;}
 div[data-testid="stSlider"] div[role="slider"]{background:#00d4ff !important;box-shadow:0 0 10px rgba(0,212,255,0.6) !important;}
-.info-box{background:rgba(0,212,255,0.06);border-left:3px solid #00d4ff;border-radius:10px;padding:14px 18px;color:#94a3b8;margin:10px 0;box-shadow:0 0 15px rgba(0,212,255,0.08);}
+.info-box{background:rgba(0,212,255,0.06);border-left:3px solid #00d4ff;border-radius:10px;padding:14px 18px;color:#94a3b8;margin:10px 0;}
 .warn-box{background:rgba(255,170,0,0.06);border-left:3px solid #ffaa00;border-radius:10px;padding:14px 18px;color:#94a3b8;margin:10px 0;}
-.cloud-box{background:rgba(0,20,50,0.8);border:1px solid rgba(0,212,255,0.3);border-radius:16px;padding:30px;text-align:center;margin:10px 0;box-shadow:0 0 20px rgba(0,212,255,0.1);}
+.cloud-box{background:rgba(0,20,50,0.8);border:1px solid rgba(0,212,255,0.3);border-radius:16px;padding:30px;text-align:center;margin:10px 0;}
 .local-box{background:rgba(0,20,50,0.8);border:2px dashed rgba(0,212,255,0.4);border-radius:16px;padding:20px;text-align:center;margin:10px 0;}
-.live-badge{display:inline-block;background:#ef4444;color:white;border-radius:999px;padding:3px 14px;font-size:0.75rem;font-weight:700;box-shadow:0 0 15px rgba(239,68,68,0.6);animation:blink 1.2s ease-in-out infinite;}
+.live-badge{display:inline-block;background:#ef4444;color:white;border-radius:999px;padding:3px 14px;font-size:0.75rem;font-weight:700;animation:blink 1.2s ease-in-out infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
 .tag{display:inline-block;background:rgba(0,212,255,0.08);color:#00d4ff;border:1px solid rgba(0,212,255,0.25);border-radius:6px;padding:2px 10px;font-size:0.78rem;font-weight:600;margin:2px;}
 .footer{text-align:center;color:#334155;font-size:0.8rem;padding:20px 0;}
@@ -193,7 +185,17 @@ div[data-testid="stDataFrame"]{border:1px solid rgba(0,212,255,0.2) !important;b
 
 RUNNING_LOCAL = is_local()
 
-# ── Helpers ───────────────────────────────────────────────────
+# ── Image Resize Helper — prevents RAM crash on cloud ─────────
+def resize_for_inference(pil_image, max_size=800):
+    """Resize large images before inference to prevent OOM crash."""
+    w, h = pil_image.size
+    if max(w, h) > max_size:
+        scale = max_size / max(w, h)
+        new_w, new_h = int(w * scale), int(h * scale)
+        pil_image = pil_image.resize((new_w, new_h), Image.LANCZOS)
+    return pil_image
+
+# ── Video Processing ──────────────────────────────────────────
 def process_video(video_path, model, original_filename="video.mp4"):
     try:
         import imageio
@@ -220,104 +222,115 @@ def process_video(video_path, model, original_filename="video.mp4"):
         st.error(f"❌ Failed to read video: {e}")
         return None, {}, 0
     for frame_rgb in reader:
-        pil_f=Image.fromarray(frame_rgb)
-        res=run_inference(model,pil_f,score_thr)
-        out_f,nd=draw_results(pil_f,res,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
+        pil_f = resize_for_inference(Image.fromarray(frame_rgb))
+        res   = run_inference(model, pil_f, score_thr)
+        out_f, nd = draw_results(pil_f, res, mask_thr=mask_thr, show_masks=show_masks,
+                                  show_boxes=show_boxes, show_labels=show_labels, alpha=alpha)
         output_frames.append(out_f)
-        total_det+=nd
+        total_det += nd
         for lbl in res['labels']:
-            cname=COCO_CLASSES.get(int(lbl),'?')
-            all_classes[cname]=all_classes.get(cname,0)+1
-        frame_idx+=1
-        elapsed=time.time()-start_time
-        eta=(elapsed/frame_idx)*(total_frames-frame_idx) if frame_idx>0 else 0
-        progress_bar.progress(min(frame_idx/max(total_frames,1),1.0),text=f"⏳ Processing frame {frame_idx} of {total_frames} — ETA: {eta:.0f}s")
-        if frame_idx%10==0:
-            preview_ph.image(out_f,caption=f"Frame #{frame_idx} — {nd} object(s) detected",width="stretch")
-            stats_ph.markdown(f"| | |\n|---|---|\n| 🎯 Frame | **{frame_idx} / {total_frames}** |\n| 🔍 This frame | **{nd}** |\n| 📊 Total detections | **{total_det}** |\n| ⏱️ Elapsed | **{elapsed:.1f}s** |\n| 🏷️ Classes | **{', '.join(list(all_classes.keys())[:5])}{'...' if len(all_classes)>5 else ''}** |")
+            cname = COCO_CLASSES.get(int(lbl), '?')
+            all_classes[cname] = all_classes.get(cname, 0) + 1
+        frame_idx += 1
+        elapsed = time.time() - start_time
+        eta = (elapsed/frame_idx)*(total_frames-frame_idx) if frame_idx > 0 else 0
+        progress_bar.progress(min(frame_idx/max(total_frames,1),1.0),
+            text=f"⏳ Processing frame {frame_idx} of {total_frames} — ETA: {eta:.0f}s")
+        if frame_idx % 10 == 0:
+            preview_ph.image(out_f, caption=f"Frame #{frame_idx} — {nd} object(s) detected", width="stretch")
+            stats_ph.markdown(f"| | |\n|---|---|\n| 🎯 Frame | **{frame_idx} / {total_frames}** |\n| 🔍 This frame | **{nd}** |\n| 📊 Total | **{total_det}** |\n| ⏱️ Elapsed | **{elapsed:.1f}s** |")
     reader.close()
     with st.spinner("💾 Saving output video..."):
         try:
-            writer=imageio.get_writer(out_path,format='ffmpeg',fps=fps,codec='libx264',output_params=['-pix_fmt','yuv420p'])
+            writer = imageio.get_writer(out_path, format='ffmpeg', fps=fps,
+                                        codec='libx264', output_params=['-pix_fmt','yuv420p'])
             for frm in output_frames: writer.append_data(frm)
             writer.close()
         except Exception as e:
             st.error(f"❌ Failed to save output video: {e}")
             return None, all_classes, total_det
-    progress_bar.progress(1.0,text="✅ Processing complete!")
+    progress_bar.progress(1.0, text="✅ Processing complete!")
     return out_path, all_classes, total_det
 
 def show_video_summary(out_path, all_classes, total_det, total_frames, filename="output.mp4"):
     st.markdown("---")
     st.markdown("### 📊 Video Detection Summary")
-    sc1,sc2,sc3=st.columns(3)
-    sc1.markdown(f'<div class="metric-card"><div class="metric-val">{total_frames}</div><div class="metric-lbl">Total Frames</div></div>',unsafe_allow_html=True)
-    sc2.markdown(f'<div class="metric-card"><div class="metric-val">{total_det}</div><div class="metric-lbl">Total Detections</div></div>',unsafe_allow_html=True)
-    sc3.markdown(f'<div class="metric-card"><div class="metric-val">{total_det//max(total_frames,1)}</div><div class="metric-lbl">Avg per Frame</div></div>',unsafe_allow_html=True)
+    sc1,sc2,sc3 = st.columns(3)
+    sc1.markdown(f'<div class="metric-card"><div class="metric-val">{total_frames}</div><div class="metric-lbl">Total Frames</div></div>', unsafe_allow_html=True)
+    sc2.markdown(f'<div class="metric-card"><div class="metric-val">{total_det}</div><div class="metric-lbl">Total Detections</div></div>', unsafe_allow_html=True)
+    sc3.markdown(f'<div class="metric-card"><div class="metric-val">{total_det//max(total_frames,1)}</div><div class="metric-lbl">Avg per Frame</div></div>', unsafe_allow_html=True)
     if all_classes:
         st.markdown("#### 🏷️ Classes Detected")
-        st.dataframe(pd.DataFrame(sorted(all_classes.items(),key=lambda x:-x[1]),columns=["Class","Total Detections"]),width="stretch",hide_index=True)
+        st.dataframe(pd.DataFrame(sorted(all_classes.items(), key=lambda x:-x[1]),
+                     columns=["Class","Total Detections"]), width="stretch", hide_index=True)
     if out_path and os.path.exists(out_path):
         st.markdown("---")
-        with open(out_path,"rb") as f: video_bytes=f.read()
-        st.download_button("⬇️ Download Output Video",video_bytes,f"mask_rcnn_{filename}","video/mp4",width="stretch",type="primary")
+        with open(out_path,"rb") as f: video_bytes = f.read()
+        st.download_button("⬇️ Download Output Video", video_bytes,
+            f"mask_rcnn_{filename}", "video/mp4", width="stretch", type="primary")
         try: os.unlink(out_path)
         except: pass
 
 def show_result_details(results, n_det, score_thr):
-    if n_det==0:
+    if n_det == 0:
         st.warning("⚠️ No objects detected. Try lowering the Confidence Threshold.")
         return
-    mc1,mc2,mc3,mc4=st.columns(4)
-    mc1.markdown(f'<div class="metric-card"><div class="metric-val">{n_det}</div><div class="metric-lbl">Objects Detected</div></div>',unsafe_allow_html=True)
-    mc2.markdown(f'<div class="metric-card"><div class="metric-val">{results["time"]*1000:.0f}ms</div><div class="metric-lbl">Inference Time</div></div>',unsafe_allow_html=True)
-    mc3.markdown(f'<div class="metric-card"><div class="metric-val">{score_thr:.2f}</div><div class="metric-lbl">Confidence Threshold</div></div>',unsafe_allow_html=True)
-    mc4.markdown(f'<div class="metric-card"><div class="metric-val">{str(device).upper()}</div><div class="metric-lbl">Device</div></div>',unsafe_allow_html=True)
-    st.markdown("<br>",unsafe_allow_html=True)
+    mc1,mc2,mc3,mc4 = st.columns(4)
+    mc1.markdown(f'<div class="metric-card"><div class="metric-val">{n_det}</div><div class="metric-lbl">Objects Detected</div></div>', unsafe_allow_html=True)
+    mc2.markdown(f'<div class="metric-card"><div class="metric-val">{results["time"]*1000:.0f}ms</div><div class="metric-lbl">Inference Time</div></div>', unsafe_allow_html=True)
+    mc3.markdown(f'<div class="metric-card"><div class="metric-val">{score_thr:.2f}</div><div class="metric-lbl">Confidence Threshold</div></div>', unsafe_allow_html=True)
+    mc4.markdown(f'<div class="metric-card"><div class="metric-val">{str(device).upper()}</div><div class="metric-lbl">Device</div></div>', unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("#### 📋 Detection Details")
-    rows=[]
+    rows = []
     for i in range(n_det):
-        lid=int(results['labels'][i]); lname=COCO_CLASSES.get(lid,f'class_{lid}')
+        lid=int(results['labels'][i]); lname=COCO_CLASSES.get(lid, f'class_{lid}')
         score=float(results['scores'][i]); box=results['boxes'][i].astype(int)
-        rows.append({"#":i+1,"Class":lname,"Score":f"{score:.3f}","Width (px)":int(box[2]-box[0]),"Height (px)":int(box[3]-box[1]),"Bounding Box":f"[{box[0]},{box[1]},{box[2]},{box[3]}]"})
-    st.dataframe(pd.DataFrame(rows),width="stretch",hide_index=True)
-    ch1,ch2=st.columns(2)
+        rows.append({"#":i+1,"Class":lname,"Score":f"{score:.3f}",
+            "Width (px)":int(box[2]-box[0]),"Height (px)":int(box[3]-box[1]),
+            "Bounding Box":f"[{box[0]},{box[1]},{box[2]},{box[3]}]"})
+    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+    ch1,ch2 = st.columns(2)
     with ch1:
         st.markdown("#### 📊 Class Distribution")
-        class_counts={}
+        class_counts = {}
         for i in range(n_det):
-            name=COCO_CLASSES.get(int(results['labels'][i]),'?')
-            class_counts[name]=class_counts.get(name,0)+1
-        fig,ax=plt.subplots(figsize=(5,3.5))
-        fig.patch.set_facecolor('#020917');ax.set_facecolor('#0a1628')
-        bars=ax.bar(class_counts.keys(),class_counts.values(),color='#00d4ff',edgecolor='#003d52')
+            name = COCO_CLASSES.get(int(results['labels'][i]),'?')
+            class_counts[name] = class_counts.get(name,0)+1
+        fig,ax = plt.subplots(figsize=(5,3.5))
+        fig.patch.set_facecolor('#020917'); ax.set_facecolor('#0a1628')
+        bars = ax.bar(class_counts.keys(), class_counts.values(), color='#00d4ff', edgecolor='#003d52')
         for bar,val in zip(bars,class_counts.values()):
-            ax.text(bar.get_x()+bar.get_width()/2,bar.get_height()+0.05,str(val),ha='center',va='bottom',fontweight='bold',color='#00d4ff')
-        ax.set_ylabel("Count",color='#64748b');ax.set_title("Instances per Class",fontweight='bold',color='#e2e8f0')
-        ax.set_ylim(0,max(class_counts.values())+1.5);ax.tick_params(colors='#64748b')
-        for s in ['top','right']:ax.spines[s].set_visible(False)
-        for s in ['bottom','left']:ax.spines[s].set_color('#1e3a5f')
-        plt.xticks(rotation=30,ha='right',fontsize=9,color='#94a3b8');plt.tight_layout();st.pyplot(fig);plt.close()
+            ax.text(bar.get_x()+bar.get_width()/2, bar.get_height()+0.05, str(val),
+                    ha='center', va='bottom', fontweight='bold', color='#00d4ff')
+        ax.set_ylabel("Count",color='#64748b'); ax.set_title("Instances per Class",fontweight='bold',color='#e2e8f0')
+        ax.set_ylim(0,max(class_counts.values())+1.5); ax.tick_params(colors='#64748b')
+        for s in ['top','right']: ax.spines[s].set_visible(False)
+        for s in ['bottom','left']: ax.spines[s].set_color('#1e3a5f')
+        plt.xticks(rotation=30,ha='right',fontsize=9,color='#94a3b8')
+        plt.tight_layout(); st.pyplot(fig); plt.close()
     with ch2:
-        if n_det>1:
+        if n_det > 1:
             st.markdown("#### 📉 Confidence Scores")
-            scores_list=results['scores'].tolist()
-            labels_list=[COCO_CLASSES.get(int(l),'?') for l in results['labels']]
-            colors_bar=[f'#{COLORS[i%len(COLORS)][0]:02x}{COLORS[i%len(COLORS)][1]:02x}{COLORS[i%len(COLORS)][2]:02x}' for i in range(n_det)]
-            fig2,ax2=plt.subplots(figsize=(5,3.5))
-            fig2.patch.set_facecolor('#020917');ax2.set_facecolor('#0a1628')
-            ax2.barh(range(n_det),scores_list,color=colors_bar,edgecolor='#001428')
-            ax2.set_yticks(range(n_det));ax2.set_yticklabels([f"#{i+1} {labels_list[i]}" for i in range(n_det)],fontsize=8,color='#94a3b8')
-            ax2.set_xlabel("Confidence Score",color='#64748b');ax2.set_xlim(0,1.05)
-            ax2.axvline(score_thr,color='#00d4ff',linestyle='--',linewidth=1.5,label=f'Threshold = {score_thr}')
-            ax2.legend(fontsize=8,facecolor='#0a1628',labelcolor='#94a3b8')
-            ax2.set_title("Per-Instance Confidence",fontweight='bold',color='#e2e8f0');ax2.tick_params(colors='#64748b')
-            for s in ['top','right']:ax2.spines[s].set_visible(False)
-            for s in ['bottom','left']:ax2.spines[s].set_color('#1e3a5f')
-            plt.tight_layout();st.pyplot(fig2);plt.close()
+            scores_list = results['scores'].tolist()
+            labels_list = [COCO_CLASSES.get(int(l),'?') for l in results['labels']]
+            colors_bar  = [f'#{COLORS[i%len(COLORS)][0]:02x}{COLORS[i%len(COLORS)][1]:02x}{COLORS[i%len(COLORS)][2]:02x}' for i in range(n_det)]
+            fig2,ax2 = plt.subplots(figsize=(5,3.5))
+            fig2.patch.set_facecolor('#020917'); ax2.set_facecolor('#0a1628')
+            ax2.barh(range(n_det), scores_list, color=colors_bar, edgecolor='#001428')
+            ax2.set_yticks(range(n_det))
+            ax2.set_yticklabels([f"#{i+1} {labels_list[i]}" for i in range(n_det)], fontsize=8, color='#94a3b8')
+            ax2.set_xlabel("Confidence Score",color='#64748b'); ax2.set_xlim(0,1.05)
+            ax2.axvline(score_thr, color='#00d4ff', linestyle='--', linewidth=1.5, label=f'Threshold = {score_thr}')
+            ax2.legend(fontsize=8, facecolor='#0a1628', labelcolor='#94a3b8')
+            ax2.set_title("Per-Instance Confidence",fontweight='bold',color='#e2e8f0')
+            ax2.tick_params(colors='#64748b')
+            for s in ['top','right']: ax2.spines[s].set_visible(False)
+            for s in ['bottom','left']: ax2.spines[s].set_color('#1e3a5f')
+            plt.tight_layout(); st.pyplot(fig2); plt.close()
 
 # ── Header ────────────────────────────────────────────────────
-env_icon="🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
+env_icon = "🖥️ Local Mode" if RUNNING_LOCAL else "☁️ Cloud Mode"
 st.markdown(f"""
 <div class="neural-header">
     <p class="main-title">🎭 Mask R-CNN</p>
@@ -337,23 +350,23 @@ st.markdown("---")
 # ── Sidebar ───────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
-    score_thr=st.slider("🎯 Confidence Threshold",0.10,0.95,0.50,0.05)
-    st.markdown('<div class="slider-desc"><b>How confident should the model be?</b><br>↑ Higher → More accurate, fewer detections<br>↓ Lower → More detections, possible false positives</div>',unsafe_allow_html=True)
-    mask_thr=st.slider("🎨 Mask Threshold",0.10,0.90,0.50,0.05)
-    st.markdown('<div class="slider-desc"><b>How tight should the object silhouette be?</b><br>↑ Higher → Sharp, precise edges<br>↓ Lower → Looser mask, more area coverage</div>',unsafe_allow_html=True)
-    alpha=st.slider("🌫️ Mask Transparency",0.10,0.90,0.45,0.05)
-    st.markdown('<div class="slider-desc"><b>Color overlay opacity:</b><br>↑ Higher → More opaque mask overlay<br>↓ Lower → Original image more visible</div>',unsafe_allow_html=True)
+    score_thr = st.slider("🎯 Confidence Threshold", 0.10, 0.95, 0.50, 0.05)
+    st.markdown('<div class="slider-desc"><b>How confident should the model be?</b><br>↑ Higher → More accurate, fewer detections<br>↓ Lower → More detections, possible false positives</div>', unsafe_allow_html=True)
+    mask_thr = st.slider("🎨 Mask Threshold", 0.10, 0.90, 0.50, 0.05)
+    st.markdown('<div class="slider-desc"><b>How tight should the object silhouette be?</b><br>↑ Higher → Sharp, precise edges<br>↓ Lower → Looser mask, more coverage</div>', unsafe_allow_html=True)
+    alpha = st.slider("🌫️ Mask Transparency", 0.10, 0.90, 0.45, 0.05)
+    st.markdown('<div class="slider-desc"><b>Color overlay opacity:</b><br>↑ Higher → More opaque mask overlay<br>↓ Lower → Original image more visible</div>', unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("## 👁️ Display Options")
-    show_masks=st.checkbox("Show Masks",value=True)
-    show_boxes=st.checkbox("Show Bounding Boxes",value=True)
-    show_labels=st.checkbox("Show Labels",value=True)
+    show_masks  = st.checkbox("Show Masks",           value=True)
+    show_boxes  = st.checkbox("Show Bounding Boxes",  value=True)
+    show_labels = st.checkbox("Show Labels",          value=True)
     st.markdown("---")
     if st.session_state['pil_image'] is not None:
-        if st.button("🔄 Re-run with New Settings",type="primary",width="stretch"):
-            st.session_state['result_img']=None
-            st.session_state['results']=None
-            st.session_state['n_det']=0
+        if st.button("🔄 Re-run with New Settings", type="primary", width="stretch"):
+            st.session_state['result_img'] = None
+            st.session_state['results']    = None
+            st.session_state['n_det']      = 0
     st.markdown("---")
     st.markdown("## 🖥️ System Info")
     st.markdown(f"**Device:** `{str(device).upper()}`")
@@ -366,20 +379,24 @@ with st.sidebar:
 
 # ── Tabs ──────────────────────────────────────────────────────
 st.markdown("### 📥 Select Input Source")
-tab1,tab2,tab3,tab4=st.tabs(["📁 Upload File","🔗 Image / Video URL","🖼️ Sample Images","📷 Webcam"])
+tab1, tab2, tab3, tab4 = st.tabs([
+    "📁 Upload File", "🔗 Image / Video URL", "🖼️ Sample Images", "📷 Webcam"
+])
 
 # ── Tab 1: Upload ─────────────────────────────────────────────
 with tab1:
-    uploaded=st.file_uploader("Upload an Image or Video file",type=["jpg","jpeg","png","mp4","avi","mov","mkv"])
+    uploaded = st.file_uploader("Upload an Image or Video file",
+                                 type=["jpg","jpeg","png","mp4","avi","mov","mkv"])
     if uploaded:
-        file_type=uploaded.type
+        file_type = uploaded.type
         if file_type.startswith("image"):
-            img=Image.open(uploaded).convert("RGB")
-            st.session_state['pil_image']=img
-            st.session_state['result_img']=None
-            st.session_state['results']=None
+            img = Image.open(uploaded).convert("RGB")
+            img = resize_for_inference(img)
+            st.session_state['pil_image']  = img
+            st.session_state['result_img'] = None
+            st.session_state['results']    = None
             st.success(f"✅ {uploaded.name} loaded successfully ({img.size[0]}×{img.size[1]}px)")
-            st.image(img,width="stretch")
+            st.image(img, width="stretch")
         elif file_type.startswith("video"):
             st.success(f"✅ Video uploaded: **{uploaded.name}**")
             st.video(uploaded)
@@ -388,20 +405,20 @@ with tab1:
 ⚡ <b>Detection will run on every frame.</b><br>
 Large videos may take longer to process on cloud.<br>
 Once complete, you can download the fully annotated output video.
-</div>""",unsafe_allow_html=True)
-            if st.button("🚀 Start Video Detection",type="primary",width="stretch"):
-                tfile=tempfile.NamedTemporaryFile(delete=False,suffix=".mp4")
-                tfile.write(uploaded.read());tfile.flush()
-                with st.spinner("🧠 Loading model..."): model=load_model()
-                out_path,all_classes,total_det=process_video(tfile.name,model,uploaded.name)
-                cap2=cv2.VideoCapture(tfile.name)
-                total_frames=int(cap2.get(cv2.CAP_PROP_FRAME_COUNT));cap2.release()
-                show_video_summary(out_path,all_classes,total_det,total_frames,uploaded.name)
+</div>""", unsafe_allow_html=True)
+            if st.button("🚀 Start Video Detection", type="primary", width="stretch"):
+                tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+                tfile.write(uploaded.read()); tfile.flush()
+                with st.spinner("🧠 Loading model..."): model = load_model()
+                out_path, all_classes, total_det = process_video(tfile.name, model, uploaded.name)
+                cap2 = cv2.VideoCapture(tfile.name)
+                total_frames = int(cap2.get(cv2.CAP_PROP_FRAME_COUNT)); cap2.release()
+                show_video_summary(out_path, all_classes, total_det, total_frames, uploaded.name)
                 try: os.unlink(tfile.name)
                 except: pass
     elif st.session_state['pil_image'] is not None:
         st.info("ℹ️ Previous image is loaded. Upload a new file or click Run Detection below.")
-        st.image(st.session_state['pil_image'],width="stretch")
+        st.image(st.session_state['pil_image'], width="stretch")
 
 # ── Tab 2: URL ────────────────────────────────────────────────
 with tab2:
@@ -409,95 +426,103 @@ with tab2:
 💡 <b>Only direct file URLs are supported.</b><br>
 🖼️ Image: <code>.jpg &nbsp;.jpeg &nbsp;.png &nbsp;.webp</code> &nbsp;|&nbsp; 🎬 Video: <code>.mp4 &nbsp;.avi &nbsp;.mov &nbsp;.mkv</code><br>
 ⚠️ YouTube, Bing, and Google links are <b>not supported</b> — they do not serve direct files.
-</div>""",unsafe_allow_html=True)
-    url=st.text_input("Paste a direct Image or Video URL:",placeholder="https://example.com/image.jpg")
+</div>""", unsafe_allow_html=True)
+    url = st.text_input("Paste a direct Image or Video URL:",
+                         placeholder="https://example.com/image.jpg")
     if url:
-        url_clean=url.lower().split("?")[0].split("#")[0]
-        video_exts=(".mp4",".avi",".mov",".mkv",".webm",".mpeg")
-        image_exts=(".jpg",".jpeg",".png",".gif",".webp",".bmp")
-        is_video=any(url_clean.endswith(e) for e in video_exts)
-        is_image=any(url_clean.endswith(e) for e in image_exts)
+        url_clean  = url.lower().split("?")[0].split("#")[0]
+        video_exts = (".mp4",".avi",".mov",".mkv",".webm",".mpeg")
+        image_exts = (".jpg",".jpeg",".png",".gif",".webp",".bmp")
+        is_video   = any(url_clean.endswith(e) for e in video_exts)
+        is_image   = any(url_clean.endswith(e) for e in image_exts)
         if not is_video and not is_image:
             try:
                 with st.spinner("🔍 Detecting URL type..."):
-                    head=requests.head(url,timeout=8,allow_redirects=True,headers={"User-Agent":"Mozilla/5.0"})
-                    ct=head.headers.get("Content-Type","").lower()
-                if any(v in ct for v in ["video","mp4","webm","mpeg"]): is_video=True
-                elif any(i in ct for i in ["image","jpeg","png","gif","webp"]): is_image=True
+                    head = requests.head(url, timeout=8, allow_redirects=True,
+                                        headers={"User-Agent":"Mozilla/5.0"})
+                    ct = head.headers.get("Content-Type","").lower()
+                if any(v in ct for v in ["video","mp4","webm","mpeg"]): is_video = True
+                elif any(i in ct for i in ["image","jpeg","png","gif","webp"]): is_image = True
                 elif "text/html" in ct:
-                    st.error("❌ This URL points to a webpage, not a direct file. Please provide a direct image or video URL.")
-                    is_image=False
-                else: is_image=True
-            except Exception: is_image=True
+                    st.error("❌ This URL points to a webpage, not a direct file.")
+                    is_image = False
+                else: is_image = True
+            except Exception: is_image = True
         if is_image and not is_video:
             try:
                 with st.spinner("⬇️ Downloading image..."):
-                    r=requests.get(url,timeout=15,headers={"User-Agent":"Mozilla/5.0"})
+                    r = requests.get(url, timeout=15, headers={"User-Agent":"Mozilla/5.0"})
                     r.raise_for_status()
-                    ct=r.headers.get("Content-Type","").lower()
+                    ct = r.headers.get("Content-Type","").lower()
                     if "text/html" in ct:
-                        st.error("❌ The server returned a webpage instead of an image. Please use a direct image file URL.")
+                        st.error("❌ The server returned a webpage. Please use a direct image file URL.")
                         st.stop()
-                    img=Image.open(BytesIO(r.content)).convert("RGB")
-                st.session_state['pil_image']=img
-                st.session_state['result_img']=None
-                st.session_state['results']=None
+                    img = Image.open(BytesIO(r.content)).convert("RGB")
+                    img = resize_for_inference(img)
+                st.session_state['pil_image']  = img
+                st.session_state['result_img'] = None
+                st.session_state['results']    = None
                 st.success(f"✅ Image downloaded successfully! ({img.size[0]}×{img.size[1]}px)")
-                st.image(img,width="stretch")
+                st.image(img, width="stretch")
             except Exception as e:
                 st.error(f"❌ Failed to load image: {e}")
                 st.markdown("""<div class="warn-box">
 💡 <b>Possible reasons:</b><br>
 • The URL does not point to a direct image file<br>
-• The server blocked the request (access restricted)<br>
-• The URL has expired or is no longer valid<br><br>
-✅ <b>Tip:</b> Open the URL in your browser — it should display the image directly, with no webpage around it.
-</div>""",unsafe_allow_html=True)
+• The server blocked the request<br>
+• The URL has expired<br><br>
+✅ <b>Tip:</b> Open the URL in your browser — it should show the image directly.
+</div>""", unsafe_allow_html=True)
         elif is_video:
             st.markdown(f"""<div class="info-box">🎬 <b>Video URL detected!</b><br>
-<code style="font-size:0.8rem;word-break:break-all;">{url[:100]}{'...' if len(url)>100 else ''}</code></div>""",unsafe_allow_html=True)
-            if st.button("⬇️ Download & Run Detection",type="primary",width="stretch"):
-                progress_dl=st.progress(0,text="⬇️ Downloading video...")
+<code style="font-size:0.8rem;word-break:break-all;">{url[:100]}{'...' if len(url)>100 else ''}</code></div>""",
+                        unsafe_allow_html=True)
+            if st.button("⬇️ Download & Run Detection", type="primary", width="stretch"):
+                progress_dl = st.progress(0, text="⬇️ Downloading video...")
                 try:
-                    with requests.get(url,stream=True,timeout=120,headers={"User-Agent":"Mozilla/5.0"}) as r:
+                    with requests.get(url, stream=True, timeout=120,
+                                      headers={"User-Agent":"Mozilla/5.0"}) as r:
                         r.raise_for_status()
-                        ct=r.headers.get("Content-Type","").lower()
+                        ct = r.headers.get("Content-Type","").lower()
                         if "text/html" in ct:
                             st.error("❌ This is a webpage. Please provide a direct .mp4 file URL.")
                             st.stop()
-                        total_size=int(r.headers.get("content-length",0))
-                        tfile=tempfile.NamedTemporaryFile(delete=False,suffix=".mp4")
-                        downloaded=0
+                        total_size = int(r.headers.get("content-length",0))
+                        tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+                        downloaded = 0
                         for chunk in r.iter_content(chunk_size=1024*1024):
                             if chunk:
-                                tfile.write(chunk);downloaded+=len(chunk)
-                                if total_size: progress_dl.progress(min(downloaded/total_size,1.0),text=f"⬇️ {downloaded//(1024*1024)} MB / {total_size//(1024*1024)} MB")
+                                tfile.write(chunk); downloaded += len(chunk)
+                                if total_size:
+                                    progress_dl.progress(min(downloaded/total_size,1.0),
+                                        text=f"⬇️ {downloaded//(1024*1024)} MB / {total_size//(1024*1024)} MB")
                         tfile.flush()
-                    progress_dl.progress(1.0,text="✅ Download complete!")
+                    progress_dl.progress(1.0, text="✅ Download complete!")
                     st.success(f"✅ Video downloaded ({downloaded//(1024*1024)} MB)")
                 except Exception as e:
-                    st.error(f"❌ Download failed: {e}");st.stop()
-                with st.spinner("🧠 Loading model..."): model=load_model()
-                out_path,all_classes,total_det=process_video(tfile.name,model)
-                cap2=cv2.VideoCapture(tfile.name)
-                total_frames=int(cap2.get(cv2.CAP_PROP_FRAME_COUNT));cap2.release()
-                show_video_summary(out_path,all_classes,total_det,total_frames,"url_video.mp4")
+                    st.error(f"❌ Download failed: {e}"); st.stop()
+                with st.spinner("🧠 Loading model..."): model = load_model()
+                out_path, all_classes, total_det = process_video(tfile.name, model)
+                cap2 = cv2.VideoCapture(tfile.name)
+                total_frames = int(cap2.get(cv2.CAP_PROP_FRAME_COUNT)); cap2.release()
+                show_video_summary(out_path, all_classes, total_det, total_frames, "url_video.mp4")
                 try: os.unlink(tfile.name)
                 except: pass
 
 # ── Tab 3: Sample Images ──────────────────────────────────────
 with tab3:
-    choice=st.selectbox("Select a sample image:",list(SAMPLE_IMAGES.keys()))
-    if st.button("📥 Load Sample Image",width="stretch"):
+    choice = st.selectbox("Select a sample image:", list(SAMPLE_IMAGES.keys()))
+    if st.button("📥 Load Sample Image", width="stretch"):
         try:
             with st.spinner("Loading sample image..."):
-                r=requests.get(SAMPLE_IMAGES[choice],timeout=10)
-                img=Image.open(BytesIO(r.content)).convert("RGB")
-            st.session_state['pil_image']=img
-            st.session_state['result_img']=None
-            st.session_state['results']=None
+                r = requests.get(SAMPLE_IMAGES[choice], timeout=10)
+                img = Image.open(BytesIO(r.content)).convert("RGB")
+                img = resize_for_inference(img)
+            st.session_state['pil_image']  = img
+            st.session_state['result_img'] = None
+            st.session_state['results']    = None
             st.success(f"✅ Sample loaded! ({img.size[0]}×{img.size[1]}px)")
-            st.image(img,width="stretch")
+            st.image(img, width="stretch")
         except Exception as e:
             st.error(f"❌ Failed to load sample: {e}")
 
@@ -509,71 +534,71 @@ with tab4:
 Click <b>Open Camera</b> to activate your webcam.<br>
 The camera will close automatically once a photo is taken.
 </p>
-</div>""",unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
 
-    col1,col2=st.columns(2)
-    open_btn =col1.button("📷 Open Camera", type="primary", width="stretch",
-                           disabled=st.session_state['camera_active'])
-    close_btn=col2.button("✖️ Close Camera", width="stretch",
-                           disabled=not st.session_state['camera_active'])
-
+    col1, col2 = st.columns(2)
+    open_btn  = col1.button("📷 Open Camera",  type="primary", width="stretch",
+                             disabled=st.session_state['camera_active'])
+    close_btn = col2.button("✖️ Close Camera", width="stretch",
+                             disabled=not st.session_state['camera_active'])
     if open_btn:
-        st.session_state['camera_active']=True
+        st.session_state['camera_active'] = True
         st.rerun()
     if close_btn:
-        st.session_state['camera_active']=False
+        st.session_state['camera_active'] = False
         st.rerun()
 
     if st.session_state['camera_active']:
-        camera_img=st.camera_input("📷 Capture a photo for detection")
+        camera_img = st.camera_input("📷 Capture a photo for detection")
         if camera_img is not None:
-            # Auto-close camera after photo is taken
-            st.session_state['camera_active']=False
-            pil_cam=Image.open(camera_img).convert("RGB")
-            with st.spinner("🧠 Loading model..."): model=load_model()
-            with st.spinner("⚡ Running inference..."): cam_results=run_inference(model,pil_cam,score_thr)
+            st.session_state['camera_active'] = False
+            pil_cam = resize_for_inference(Image.open(camera_img).convert("RGB"))
+            with st.spinner("🧠 Loading model..."):     model = load_model()
+            with st.spinner("⚡ Running inference..."):  cam_results = run_inference(model, pil_cam, score_thr)
             with st.spinner("🎨 Rendering results..."):
-                cam_output,cam_n=draw_results(pil_cam,cam_results,mask_thr=mask_thr,
-                    show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
-            c1,c2=st.columns(2)
-            with c1: st.markdown("**📷 Original Photo**"); st.image(pil_cam,width="stretch")
-            with c2: st.markdown(f"**🎭 Detection Result — {cam_n} object(s)**"); st.image(cam_output,width="stretch")
-            buf=BytesIO(); Image.fromarray(cam_output).save(buf,format="PNG")
-            st.download_button("⬇️ Download Result",buf.getvalue(),"webcam_result.png","image/png",width="stretch")
+                cam_output, cam_n = draw_results(pil_cam, cam_results, mask_thr=mask_thr,
+                    show_masks=show_masks, show_boxes=show_boxes,
+                    show_labels=show_labels, alpha=alpha)
+            c1, c2 = st.columns(2)
+            with c1: st.markdown("**📷 Original Photo**"); st.image(pil_cam, width="stretch")
+            with c2: st.markdown(f"**🎭 Detection Result — {cam_n} object(s)**"); st.image(cam_output, width="stretch")
+            buf = BytesIO(); Image.fromarray(cam_output).save(buf, format="PNG")
+            st.download_button("⬇️ Download Result", buf.getvalue(),
+                "webcam_result.png", "image/png", width="stretch")
             st.markdown("---")
-            show_result_details(cam_results,cam_n,score_thr)
+            show_result_details(cam_results, cam_n, score_thr)
 
-    # Live Video — Local only
     if RUNNING_LOCAL:
         st.markdown("---")
-        st.markdown('<div class="local-box"><h3>🎥 Live Video Detection <span style="font-size:0.8rem;color:#64748b;">(Local Only)</span></h3></div>',unsafe_allow_html=True)
-        col1,col2=st.columns(2)
-        start_btn=col1.button("▶️ Start Detection",type="primary",width="stretch")
-        stop_btn=col2.button("⏹️ Stop",width="stretch")
-        if start_btn: st.session_state.live_on=True
-        if stop_btn:  st.session_state.live_on=False
+        st.markdown('<div class="local-box"><h3>🎥 Live Video Detection <span style="font-size:0.8rem;color:#64748b;">(Local Only)</span></h3></div>', unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
+        start_btn = col1.button("▶️ Start Detection", type="primary", width="stretch")
+        stop_btn  = col2.button("⏹️ Stop", width="stretch")
+        if start_btn: st.session_state.live_on = True
+        if stop_btn:  st.session_state.live_on = False
         if st.session_state.live_on:
-            st.markdown('<span class="live-badge">● LIVE</span>',unsafe_allow_html=True)
-            frame_ph=st.empty(); stats_ph=st.empty()
-            with st.spinner("🧠 Loading model..."): model=load_model()
-            cap=cv2.VideoCapture(0)
+            st.markdown('<span class="live-badge">● LIVE</span>', unsafe_allow_html=True)
+            frame_ph = st.empty(); stats_ph = st.empty()
+            with st.spinner("🧠 Loading model..."): model = load_model()
+            cap = cv2.VideoCapture(0)
             if not cap.isOpened():
                 st.error("❌ Could not open webcam!")
-                st.session_state.live_on=False
+                st.session_state.live_on = False
             else:
-                frame_count=0
+                frame_count = 0
                 while True:
-                    if not st.session_state.get('live_on',False): break
-                    ret,frame=cap.read()
+                    if not st.session_state.get('live_on', False): break
+                    ret, frame = cap.read()
                     if not ret: break
-                    frame_rgb=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-                    pil_f=Image.fromarray(frame_rgb)
-                    res=run_inference(model,pil_f,score_thr)
-                    out_f,nd=draw_results(pil_f,res,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
-                    frame_ph.image(out_f,caption=f"Frame #{frame_count} — {nd} object(s)",width="stretch")
-                    detected=list(set([COCO_CLASSES.get(int(l),'?') for l in res['labels']]))
-                    stats_ph.markdown(f"🎯 **{nd}** object(s) &nbsp;|&nbsp; ⚡ **{res['time']*1000:.0f}ms** &nbsp;|&nbsp; 🏷️ {', '.join(detected[:4]) or 'None'}")
-                    frame_count+=1
+                    pil_f = resize_for_inference(Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)))
+                    res   = run_inference(model, pil_f, score_thr)
+                    out_f, nd = draw_results(pil_f, res, mask_thr=mask_thr,
+                        show_masks=show_masks, show_boxes=show_boxes,
+                        show_labels=show_labels, alpha=alpha)
+                    frame_ph.image(out_f, caption=f"Frame #{frame_count} — {nd} object(s)", width="stretch")
+                    detected = list(set([COCO_CLASSES.get(int(l),'?') for l in res['labels']]))
+                    stats_ph.markdown(f"🎯 **{nd}** &nbsp;|&nbsp; ⚡ **{res['time']*1000:.0f}ms** &nbsp;|&nbsp; 🏷️ {', '.join(detected[:4]) or 'None'}")
+                    frame_count += 1
                 cap.release()
                 st.info("⏹️ Live detection stopped.")
 
@@ -589,39 +614,47 @@ Open `http://localhost:8501` → Webcam tab → Live Video → ▶️ Start
         """)
 
 # ── Run Detection ─────────────────────────────────────────────
-pil_image=st.session_state.get('pil_image',None)
+pil_image = st.session_state.get('pil_image', None)
 if pil_image is not None:
     st.markdown("---")
     st.markdown("### 🔮 Run Object Detection")
     if st.session_state['result_img'] is not None:
-        left,right=st.columns(2)
-        with left: st.markdown("**🖼️ Original Image**"); st.image(pil_image,width="stretch")
-        with right: st.markdown(f"**🎭 Detection Result — {st.session_state['n_det']} instance(s)**"); st.image(st.session_state['result_img'],width="stretch")
-        buf=BytesIO(); Image.fromarray(st.session_state['result_img']).save(buf,format="PNG")
-        st.download_button("⬇️ Download Result",buf.getvalue(),"mask_rcnn_output.png","image/png",width="stretch")
+        left, right = st.columns(2)
+        with left:
+            st.markdown("**🖼️ Original Image**")
+            st.image(pil_image, width="stretch")
+        with right:
+            st.markdown(f"**🎭 Detection Result — {st.session_state['n_det']} instance(s)**")
+            st.image(st.session_state['result_img'], width="stretch")
+        buf = BytesIO()
+        Image.fromarray(st.session_state['result_img']).save(buf, format="PNG")
+        st.download_button("⬇️ Download Result", buf.getvalue(),
+            "mask_rcnn_output.png", "image/png", width="stretch")
         st.markdown("---")
-        show_result_details(st.session_state['results'],st.session_state['n_det'],score_thr)
+        show_result_details(st.session_state['results'], st.session_state['n_det'], score_thr)
         st.markdown("---")
-    if st.button("🚀 Run Mask R-CNN Detection",type="primary",width="stretch"):
-        with st.spinner("🧠 Loading model..."): model=load_model()
-        with st.spinner("⚡ Running inference..."): results=run_inference(model,pil_image,score_thr)
+    if st.button("🚀 Run Mask R-CNN Detection", type="primary", width="stretch"):
+        with st.spinner("🧠 Loading model..."):    model   = load_model()
+        with st.spinner("⚡ Running inference..."): results = run_inference(model, pil_image, score_thr)
         with st.spinner("🎨 Rendering results..."):
-            output_img,n_det=draw_results(pil_image,results,mask_thr=mask_thr,show_masks=show_masks,show_boxes=show_boxes,show_labels=show_labels,alpha=alpha)
-        st.session_state['result_img']=output_img
-        st.session_state['results']=results
-        st.session_state['n_det']=n_det
+            output_img, n_det = draw_results(pil_image, results, mask_thr=mask_thr,
+                show_masks=show_masks, show_boxes=show_boxes,
+                show_labels=show_labels, alpha=alpha)
+        st.session_state['result_img'] = output_img
+        st.session_state['results']    = results
+        st.session_state['n_det']      = n_det
         st.rerun()
 
 # ── About ─────────────────────────────────────────────────────
 st.markdown("---")
-c1,c2=st.columns(2)
+c1, c2 = st.columns(2)
 with c1:
     with st.expander("ℹ️ What is Mask R-CNN?"):
         st.markdown("""
 **Mask R-CNN** is a deep learning model for instance segmentation that:
 - Detects objects across **80 categories**
 - Draws a **bounding box** around each detected object
-- Generates a **pixel-level instance mask** for each object
+- Generates a **pixel-level instance mask** per object
 
 **Architecture:** ResNet-50 → FPN → RPN → RoI Align → 3 Prediction Heads
 
@@ -642,12 +675,12 @@ with c2:
 | Webcam | ✅ Photo + Live (Local) |
         """)
 with st.expander("🏷️ All 80 COCO Object Categories"):
-    cols=st.columns(5)
-    for i,cls in enumerate(COCO_CLASSES.values()):
-        cols[i%5].markdown(f"<span class='tag'>{cls}</span>",unsafe_allow_html=True)
+    cols = st.columns(5)
+    for i, cls in enumerate(COCO_CLASSES.values()):
+        cols[i%5].markdown(f"<span class='tag'>{cls}</span>", unsafe_allow_html=True)
 
 st.markdown("---")
 st.markdown("""<div class="footer">
     🎭 Mask R-CNN Instance Segmentation &nbsp;·&nbsp; Built with Streamlit &nbsp;·&nbsp;
     MS-COCO 2017 Pre-trained &nbsp;·&nbsp; 📁 Image &nbsp;+&nbsp; 🎬 Video &nbsp;+&nbsp; 📷 Webcam
-</div>""",unsafe_allow_html=True)
+</div>""", unsafe_allow_html=True)
