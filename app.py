@@ -204,7 +204,16 @@ div[data-testid="stFileUploader"]:hover {
     border-color: rgba(0,212,255,0.7) !important;
     box-shadow: 0 0 20px rgba(0,212,255,0.15) !important;
 }
-/* Inner white box fix */
+/* Inner white box fix - aggressive */
+div[data-testid="stFileUploader"] > div,
+div[data-testid="stFileUploader"] > div > div,
+div[data-testid="stFileUploader"] section,
+div[data-testid="stFileUploader"] section > div {
+    background: rgba(0,15,40,0.9) !important;
+    background-color: rgba(0,15,40,0.9) !important;
+    border-radius: 10px !important;
+    border: none !important;
+}
 div[data-testid="stFileUploader"] > div {
     background: rgba(0,15,40,0.8) !important;
     border-radius: 10px !important;
