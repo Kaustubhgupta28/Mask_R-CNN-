@@ -67,7 +67,7 @@ SAMPLE_IMAGES = {
 def load_model():
     """
     Load pretrained Mask R-CNN (ResNet-50 FPN, MS-COCO 2017).
-    Cached with @st.cache_resource — loads only once per session.
+    Cached — loads only once per session.
     """
     weights = MaskRCNN_ResNet50_FPN_Weights.DEFAULT
     m = maskrcnn_resnet50_fpn(weights=weights)
@@ -79,6 +79,7 @@ def load_model():
 def run_inference(model, pil_image, score_threshold=0.5):
     """
     Run Mask R-CNN detection on a PIL image.
+    Hard limit 512px to prevent cloud timeout/OOM.
 
     Args:
         model           : loaded model from load_model()
@@ -92,9 +93,15 @@ def run_inference(model, pil_image, score_threshold=0.5):
         masks  — instance segmentation masks
         time   — inference time in seconds
     """
+    # Hard resize limit inside inference — extra safety layer
+    w, h = pil_image.size
+    if max(w, h) > 512:
+        scale = 512 / max(w, h)
+        pil_image = pil_image.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+
     tensor = T.ToTensor()(pil_image).to(device)
     t0 = time.time()
-    with torch.no_grad():
+    with torch.inference_mode():   # faster than torch.no_grad()
         preds = model([tensor])
     elapsed = time.time() - t0
 
@@ -167,15 +174,11 @@ def is_local():
     """
     Detect if running locally or on Streamlit Cloud.
     Uses environment variables only — no webcam probing.
-    This prevents cap_v4l warnings and memory waste on cloud.
     """
-    # Streamlit Cloud always sets HOME to /home/adminuser
     if os.environ.get("HOME") == "/home/adminuser":
         return False
-    # Streamlit Cloud sharing mode flags
     if os.environ.get("STREAMLIT_SHARING_MODE"):
         return False
     if os.environ.get("IS_CLOUD"):
         return False
-    # Running locally
     return True
