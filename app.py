@@ -42,33 +42,58 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
 
+/* ── DARK BACKGROUND ── */
 .stApp {
     background: #020917 !important;
     color: #e2e8f0 !important;
 }
+
+/* ── NEURAL CANVAS ── */
 #neural-canvas {
     position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh;
     z-index: 0; pointer-events: none;
 }
-.main .block-container { position: relative; z-index: 1; }
 
+/* ── MAIN CONTENT ── */
+.main .block-container {
+    position: relative; z-index: 1;
+    transform-style: preserve-3d;
+    will-change: transform;
+}
+
+/* ── SIDEBAR ── */
 section[data-testid="stSidebar"] {
     background: linear-gradient(180deg, #040d1f 0%, #050f24 100%) !important;
     border-right: 1px solid rgba(0,212,255,0.2) !important;
+    box-shadow:
+        4px 0 24px rgba(0,0,0,0.6),
+        8px 0 48px rgba(0,0,0,0.3),
+        inset -1px 0 0 rgba(0,212,255,0.08) !important;
+    transform: translateZ(0);
+}
+section[data-testid="stSidebar"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
+    pointer-events: none;
 }
 section[data-testid="stSidebar"] * { color: #94a3b8 !important; }
 section[data-testid="stSidebar"] h2 { color: #00d4ff !important; }
 
+/* ── HEADER 3D ── */
 .neural-header {
     background: linear-gradient(135deg, rgba(0,20,50,0.95), rgba(5,15,40,0.95));
     border: 1px solid rgba(0,212,255,0.3);
     border-radius: 20px;
     padding: 36px 44px;
     margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(0,212,255,0.15), 0 0 80px rgba(0,100,255,0.08), inset 0 1px 0 rgba(0,212,255,0.2);
+    position: relative; overflow: hidden;
+    box-shadow:
+        0 0 40px rgba(0,212,255,0.15),
+        0 0 80px rgba(0,100,255,0.08),
+        inset 0 1px 0 rgba(0,212,255,0.2);
     animation: headerFloat 6s ease-in-out infinite;
 }
 @keyframes headerFloat {
@@ -92,6 +117,7 @@ section[data-testid="stSidebar"] h2 { color: #00d4ff !important; }
 }
 @keyframes shimmer { 0%{left:-100%} 100%{left:200%} }
 
+/* ── TITLE ── */
 .main-title {
     font-size: 2.8rem; font-weight: 900;
     background: linear-gradient(135deg, #00d4ff 0%, #7b2fff 50%, #00d4ff 100%);
@@ -103,12 +129,12 @@ section[data-testid="stSidebar"] h2 { color: #00d4ff !important; }
 @keyframes titleShine { to { background-position: 200% center; } }
 .subtitle { color: #64748b; font-size: 1rem; margin-top: 8px; }
 
+/* ── BADGES ── */
 .badge {
     display: inline-block;
     background: rgba(0,212,255,0.08); color: #00d4ff;
     border: 1px solid rgba(0,212,255,0.3); border-radius: 999px;
     padding: 4px 14px; font-size: 0.78rem; font-weight: 700; margin: 3px;
-    box-shadow: 0 0 10px rgba(0,212,255,0.15);
     animation: badgePulse 2s ease-in-out infinite;
 }
 @keyframes badgePulse {
@@ -116,14 +142,32 @@ section[data-testid="stSidebar"] h2 { color: #00d4ff !important; }
     50%      { box-shadow: 0 0 18px rgba(0,212,255,0.4); }
 }
 
+/* ── METRIC CARDS — 3D tilt ── */
 .metric-card {
-    background: rgba(0,20,50,0.8); border-radius: 16px;
-    padding: 20px 24px; border: 1px solid rgba(0,212,255,0.2);
-    box-shadow: 0 0 20px rgba(0,212,255,0.08);
+    background: rgba(0,20,50,0.8);
+    border-radius: 16px; padding: 20px 24px;
+    border: 1px solid rgba(0,212,255,0.2);
     text-align: center; margin: 6px 0;
-    transition: all 0.3s ease; animation: cardGlow 3s ease-in-out infinite;
+    position: relative; overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    will-change: transform;
+    animation: cardGlow 3s ease-in-out infinite;
 }
-.metric-card:hover { border-color: rgba(0,212,255,0.6); box-shadow: 0 0 30px rgba(0,212,255,0.3); transform: translateY(-4px); }
+.metric-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,212,255,0.04) 100%);
+    pointer-events: none;
+}
+.metric-card:hover {
+    transform: translateY(-6px) rotateX(6deg) rotateY(-3deg);
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.4),
+        0 0 30px rgba(0,212,255,0.25),
+        inset 0 1px 0 rgba(0,212,255,0.3) !important;
+}
 @keyframes cardGlow {
     0%,100% { box-shadow: 0 0 15px rgba(0,212,255,0.08); }
     50%      { box-shadow: 0 0 25px rgba(0,212,255,0.18); }
@@ -131,22 +175,38 @@ section[data-testid="stSidebar"] h2 { color: #00d4ff !important; }
 .metric-val { font-size: 2rem; font-weight: 800; color: #00d4ff; line-height: 1.2; }
 .metric-lbl { font-size: 0.78rem; color: #475569; margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
 
+/* ── TABS — raised 3D ── */
 div[data-testid="stTabs"] button {
-    background: rgba(0,20,50,0.8) !important; border-radius: 10px 10px 0 0 !important;
+    background: rgba(0,20,50,0.8) !important;
+    border-radius: 10px 10px 0 0 !important;
     color: #64748b !important; font-weight: 600 !important;
-    border: 1px solid rgba(0,212,255,0.15) !important; transition: all 0.3s !important;
+    border: 1px solid rgba(0,212,255,0.15) !important;
+    transform: translateY(0px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(0,212,255,0.1) !important;
+    transition: all 0.2s ease !important;
 }
-div[data-testid="stTabs"] button:hover { color: #00d4ff !important; border-color: rgba(0,212,255,0.4) !important; }
+div[data-testid="stTabs"] button:hover {
+    color: #00d4ff !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4), 0 0 12px rgba(0,212,255,0.2) !important;
+}
 div[data-testid="stTabs"] button[aria-selected="true"] {
     background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(123,47,255,0.15)) !important;
-    color: #00d4ff !important; border-color: rgba(0,212,255,0.5) !important;
-    box-shadow: 0 0 15px rgba(0,212,255,0.2) !important;
+    color: #00d4ff !important;
+    transform: translateY(-3px) !important;
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.45),
+        0 0 20px rgba(0,212,255,0.25),
+        inset 0 1px 0 rgba(0,212,255,0.4) !important;
 }
 
+/* ── FILE UPLOADER ── */
 div[data-testid="stFileUploader"] {
     background: rgba(0,20,50,0.6) !important;
     border: 2px dashed rgba(0,212,255,0.3) !important;
-    border-radius: 14px !important; transition: all 0.3s !important;
+    border-radius: 14px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(0,212,255,0.06) !important;
+    transition: all 0.3s !important;
 }
 div[data-testid="stFileUploader"]:hover {
     border-color: rgba(0,212,255,0.7) !important;
@@ -169,40 +229,79 @@ div[data-testid="stFileUploader"] button {
     color: #00d4ff !important; border: 1px solid rgba(0,212,255,0.4) !important; border-radius: 8px !important;
 }
 
+/* ── EXPANDERS ── */
 div[data-testid="stExpander"] {
     background: rgba(0,20,50,0.7) !important;
-    border: 1px solid rgba(0,212,255,0.2) !important; border-radius: 12px !important; transition: all 0.3s !important;
+    border: 1px solid rgba(0,212,255,0.2) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(0,212,255,0.08) !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease !important;
 }
-div[data-testid="stExpander"]:hover { border-color: rgba(0,212,255,0.4) !important; box-shadow: 0 0 15px rgba(0,212,255,0.1) !important; }
+div[data-testid="stExpander"]:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(0,212,255,0.4) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45), 0 0 16px rgba(0,212,255,0.12) !important;
+}
 
+/* ── BUTTONS — 3D press ── */
 div[data-testid="stButton"] button[kind="primary"] {
     background: linear-gradient(135deg, #00d4ff, #7b2fff) !important;
     border: none !important; border-radius: 12px !important;
     font-weight: 700 !important; color: white !important;
-    box-shadow: 0 0 20px rgba(0,212,255,0.4) !important; transition: all 0.3s !important;
-    animation: btnPulse 2s ease-in-out infinite !important;
+    transform: translateY(0px);
+    box-shadow:
+        0 6px 0 rgba(0,100,150,0.6),
+        0 8px 16px rgba(0,0,0,0.4),
+        0 0 20px rgba(0,212,255,0.4) !important;
+    transition: transform 0.1s ease, box-shadow 0.1s ease !important;
 }
 div[data-testid="stButton"] button[kind="primary"]:hover {
-    transform: translateY(-2px) !important; box-shadow: 0 0 35px rgba(0,212,255,0.6) !important;
+    transform: translateY(-3px) !important;
+    box-shadow:
+        0 9px 0 rgba(0,100,150,0.5),
+        0 12px 24px rgba(0,0,0,0.5),
+        0 0 35px rgba(0,212,255,0.6) !important;
 }
-@keyframes btnPulse {
-    0%,100% { box-shadow: 0 0 20px rgba(0,212,255,0.4); }
-    50%      { box-shadow: 0 0 35px rgba(0,212,255,0.7); }
+div[data-testid="stButton"] button[kind="primary"]:active {
+    transform: translateY(4px) !important;
+    box-shadow:
+        0 2px 0 rgba(0,100,150,0.6),
+        0 2px 6px rgba(0,0,0,0.3),
+        0 0 10px rgba(0,212,255,0.3) !important;
+    animation: none !important;
+}
+div[data-testid="stButton"] button:not([kind="primary"]) {
+    box-shadow: 0 4px 0 rgba(0,50,80,0.7), 0 6px 12px rgba(0,0,0,0.3) !important;
+    transform: translateY(0); border-radius: 10px !important;
+    transition: transform 0.1s, box-shadow 0.1s !important;
+}
+div[data-testid="stButton"] button:not([kind="primary"]):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 0 rgba(0,50,80,0.6), 0 10px 20px rgba(0,0,0,0.3) !important;
+}
+div[data-testid="stButton"] button:not([kind="primary"]):active {
+    transform: translateY(3px) !important;
+    box-shadow: 0 1px 0 rgba(0,50,80,0.7) !important;
 }
 
+/* ── TEXT ── */
 .stMarkdown, p, label, .stText { color: #94a3b8 !important; }
 h1, h2, h3, h4 { color: #e2e8f0 !important; }
 
+/* ── SELECTBOX ── */
 div[data-testid="stSelectbox"] > div > div {
     background: rgba(0,20,50,0.8) !important;
     border: 1px solid rgba(0,212,255,0.3) !important;
     border-radius: 10px !important; color: #e2e8f0 !important;
 }
 
+/* ── SLIDERS ── */
 div[data-testid="stSlider"] div[role="slider"] {
-    background: #00d4ff !important; box-shadow: 0 0 10px rgba(0,212,255,0.6) !important;
+    background: #00d4ff !important;
+    box-shadow: 0 0 10px rgba(0,212,255,0.6) !important;
 }
 
+/* ── INFO BOXES ── */
 .info-box {
     background: rgba(0,212,255,0.06); border-left: 3px solid #00d4ff;
     border-radius: 10px; padding: 14px 18px; color: #94a3b8; margin: 10px 0;
@@ -218,6 +317,7 @@ div[data-testid="stSlider"] div[role="slider"] {
     border-radius: 16px; padding: 20px; text-align: center; margin: 10px 0;
 }
 
+/* ── LIVE BADGE ── */
 .live-badge {
     display: inline-block; background: #ef4444; color: white;
     border-radius: 999px; padding: 3px 14px; font-size: 0.75rem; font-weight: 700;
@@ -225,14 +325,17 @@ div[data-testid="stSlider"] div[role="slider"] {
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
+/* ── TAGS ── */
 .tag {
     display: inline-block; background: rgba(0,212,255,0.08); color: #00d4ff;
     border: 1px solid rgba(0,212,255,0.25); border-radius: 6px;
     padding: 2px 10px; font-size: 0.78rem; font-weight: 600; margin: 2px;
 }
 
+/* ── FOOTER ── */
 .footer { text-align: center; color: #334155; font-size: 0.8rem; padding: 20px 0; }
 
+/* ── PARTICLES ── */
 .particle {
     position: fixed; width: 3px; height: 3px; background: #00d4ff;
     border-radius: 50%; pointer-events: none; z-index: 0;
@@ -240,11 +343,11 @@ div[data-testid="stSlider"] div[role="slider"] {
 }
 @keyframes floatUp {
     0%   { transform: translateY(100vh) scale(0); opacity:0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 0.6; }
+    10%  { opacity: 1; } 90%  { opacity: 0.6; }
     100% { transform: translateY(-10vh) scale(1); opacity: 0; }
 }
 
+/* ── DATAFRAME ── */
 div[data-testid="stDataFrame"] {
     border: 1px solid rgba(0,212,255,0.2) !important;
     border-radius: 12px !important; overflow: hidden !important;
@@ -254,21 +357,20 @@ div[data-testid="stDataFrame"] {
 .slider-desc {
     background: rgba(0,212,255,0.04);
     border-left: 2px solid rgba(0,212,255,0.35);
-    border-radius: 0 6px 6px 0;
-    padding: 7px 11px;
-    margin: -4px 0 14px 0;
-    font-size: 0.76rem;
-    color: #4e6a85;
-    line-height: 1.55;
+    border-radius: 0 6px 6px 0; padding: 7px 11px;
+    margin: -4px 0 14px 0; font-size: 0.76rem;
+    color: #4e6a85; line-height: 1.55;
 }
 .slider-desc b { color: #00a8cc; }
 .slider-desc .arr { color: #2a7a94; font-size: 0.72rem; }
 </style>
 
+<!-- Neural Network Canvas -->
 <canvas id="neural-canvas"></canvas>
 <div id="particles-container"></div>
 
 <script>
+// ── Neural Network Animation ──────────────────────────────
 (function() {
     const canvas = document.getElementById('neural-canvas');
     if (!canvas) return;
@@ -289,10 +391,10 @@ div[data-testid="stDataFrame"] {
             if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
         });
         nodes.forEach((a, i) => {
-            nodes.slice(i + 1).forEach(b => {
-                const d = Math.hypot(a.x - b.x, a.y - b.y);
+            nodes.slice(i+1).forEach(b => {
+                const d = Math.hypot(a.x-b.x, a.y-b.y);
                 if (d < 130) {
-                    const alpha = Math.floor((1 - d / 130) * 60).toString(16).padStart(2, '0');
+                    const alpha = Math.floor((1 - d/130) * 60).toString(16).padStart(2,'0');
                     ctx.beginPath(); ctx.strokeStyle = '#00d4ff' + alpha;
                     ctx.lineWidth = 0.6; ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
                 }
@@ -300,14 +402,16 @@ div[data-testid="stDataFrame"] {
         });
         nodes.forEach(n => {
             const glow = Math.sin(n.pulse) * 0.5 + 0.5;
-            ctx.beginPath(); ctx.arc(n.x, n.y, n.r + glow, 0, Math.PI * 2);
-            ctx.fillStyle = '#00d4ff'; ctx.shadowBlur = 12 + glow * 8;
+            ctx.beginPath(); ctx.arc(n.x, n.y, n.r + glow, 0, Math.PI*2);
+            ctx.fillStyle = '#00d4ff'; ctx.shadowBlur = 12 + glow*8;
             ctx.shadowColor = '#00d4ff'; ctx.fill();
         });
         requestAnimationFrame(draw);
     }
     draw();
 })();
+
+// ── Floating Particles ────────────────────────────────────
 (function() {
     const container = document.getElementById('particles-container');
     if (!container) return;
@@ -321,6 +425,35 @@ div[data-testid="stDataFrame"] {
         p.style.opacity = Math.random() * 0.6 + 0.2;
         container.appendChild(p);
     }
+})();
+
+// ── Mouse-move 3D page tilt ───────────────────────────────
+(function() {
+    const MAX_TILT = 2.5;
+    let rafId = null;
+    document.addEventListener('mousemove', function(e) {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(function() {
+            const cx = window.innerWidth  / 2;
+            const cy = window.innerHeight / 2;
+            const dx = (e.clientX - cx) / cx;
+            const dy = (e.clientY - cy) / cy;
+            const rotX = (-dy * MAX_TILT).toFixed(2);
+            const rotY = ( dx * MAX_TILT).toFixed(2);
+            const container = document.querySelector('.main .block-container');
+            if (container) {
+                container.style.transition = 'transform 0.12s ease-out';
+                container.style.transform  = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+            }
+        });
+    });
+    document.addEventListener('mouseleave', function() {
+        const container = document.querySelector('.main .block-container');
+        if (container) {
+            container.style.transition = 'transform 0.5s ease';
+            container.style.transform  = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
+        }
+    });
 })();
 </script>
 """, unsafe_allow_html=True)
