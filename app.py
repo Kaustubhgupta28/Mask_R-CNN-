@@ -462,7 +462,7 @@ def process_video(video_path, model, original_filename="video.mp4"):
         if frame_idx % 10 == 0:
             preview_ph.image(out_f,
                 caption=f"🎬 Frame #{frame_idx} — {nd} objects detected",
-                use_container_width=True)
+                width="stretch")
             stats_ph.markdown(f"""
 | | |
 |---|---|
@@ -506,7 +506,7 @@ def show_video_summary(out_path, all_classes, total_det, total_frames, filename=
             sorted(all_classes.items(), key=lambda x: -x[1]),
             columns=["Class", "Total Detections"]
         )
-        st.dataframe(cls_df, use_container_width=True, hide_index=True)
+        st.dataframe(cls_df, width="stretch", hide_index=True)
 
     if out_path and os.path.exists(out_path):
         st.markdown("---")
@@ -517,7 +517,7 @@ def show_video_summary(out_path, all_classes, total_det, total_frames, filename=
             data=video_bytes,
             file_name=f"mask_rcnn_{filename}",
             mime="video/mp4",
-            use_container_width=True,
+            width="stretch",
             type="primary"
         )
         try: os.unlink(out_path)
@@ -547,7 +547,7 @@ def show_result_details(results, n_det, score_thr):
             "Width px": int(box[2]-box[0]), "Height px": int(box[3]-box[1]),
             "Box [x1,y1,x2,y2]": f"[{box[0]},{box[1]},{box[2]},{box[3]}]"
         })
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
     ch1, ch2 = st.columns(2)
     with ch1:
@@ -680,7 +680,7 @@ with tab1:
         if file_type.startswith("image"):
             pil_image = Image.open(uploaded).convert("RGB")
             st.success(f"✅ {uploaded.name} ({pil_image.size[0]}×{pil_image.size[1]}px)")
-            st.image(pil_image, use_container_width=True)
+            st.image(pil_image, width="stretch")
 
         # ── VIDEO ─────────────────────────────────────────────
         elif file_type.startswith("video"):
@@ -694,7 +694,7 @@ Badi video (1min+) pe zyada time lag sakta hai cloud pe.<br>
 Processing ke baad <b>annotated output video download</b> kar sakte ho.
 </div>""", unsafe_allow_html=True)
 
-            if st.button("🚀 Start Video Detection", type="primary", use_container_width=True):
+            if st.button("🚀 Start Video Detection", type="primary", width="stretch"):
                 tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                 tfile.write(uploaded.read())
                 tfile.flush()
@@ -769,7 +769,7 @@ Image: <code>.jpg .png .webp</code> &nbsp;|&nbsp; Video: <code>.mp4 .avi .mov .m
                     r.raise_for_status()
                     pil_image = Image.open(BytesIO(r.content)).convert("RGB")
                 st.success(f"✅ Downloaded! ({pil_image.size[0]}×{pil_image.size[1]}px)")
-                st.image(pil_image, use_container_width=True)
+                st.image(pil_image, width="stretch")
             except Exception as e:
                 st.error(f"❌ Image load nahi hui: {e}")
 
@@ -780,7 +780,7 @@ Image: <code>.jpg .png .webp</code> &nbsp;|&nbsp; Video: <code>.mp4 .avi .mov .m
 <span style="color:#00d4ff; font-size:0.82rem; word-break:break-all;">{url[:100]}{'...' if len(url)>100 else ''}</span>
 </div>""", unsafe_allow_html=True)
 
-            if st.button("⬇️ Download & Detect Video", type="primary", use_container_width=True):
+            if st.button("⬇️ Download & Detect Video", type="primary", width="stretch"):
                 progress_dl = st.progress(0, text="⬇️ Video download ho rahi hai...")
                 tfile = None
                 try:
@@ -827,13 +827,13 @@ YouTube / Bing / Google Video links supported nahi hain.
 # ══════════════════════════════════════════════════════════════
 with tab3:
     choice = st.selectbox("Sample choose karo:", list(SAMPLE_IMAGES.keys()))
-    if st.button("📥 Load Sample", use_container_width=True):
+    if st.button("📥 Load Sample", width="stretch"):
         try:
             with st.spinner("Loading..."):
                 r = requests.get(SAMPLE_IMAGES[choice], timeout=10)
                 pil_image = Image.open(BytesIO(r.content)).convert("RGB")
             st.success(f"✅ Loaded! ({pil_image.size[0]}×{pil_image.size[1]}px)")
-            st.image(pil_image, use_container_width=True)
+            st.image(pil_image, width="stretch")
         except Exception as e:
             st.error(f"❌ Failed: {e}")
 
@@ -864,14 +864,14 @@ with tab4:
             c1, c2 = st.columns(2)
             with c1:
                 st.markdown("**📷 Original Photo**")
-                st.image(pil_cam, use_container_width=True)
+                st.image(pil_cam, width="stretch")
             with c2:
                 st.markdown(f"**🎭 Detected — {cam_n} objects**")
-                st.image(cam_output, use_container_width=True)
+                st.image(cam_output, width="stretch")
             buf = BytesIO()
             Image.fromarray(cam_output).save(buf, format="PNG")
             st.download_button("⬇️ Download Result", buf.getvalue(),
-                               "webcam_result.png", "image/png", use_container_width=True)
+                               "webcam_result.png", "image/png", width="stretch")
             st.markdown("---")
             show_result_details(cam_results, cam_n, score_thr)
 
@@ -899,19 +899,19 @@ Browser mein `http://localhost:8501` → **Webcam → Live Video → ▶️ Star
                     cam_output, cam_n = draw_results(pil_cam, cam_results, mask_thr=mask_thr,
                         show_masks=show_masks, show_boxes=show_boxes, show_labels=show_labels, alpha=alpha)
                 c1, c2 = st.columns(2)
-                with c1: st.markdown("**📷 Original**"); st.image(pil_cam, use_container_width=True)
-                with c2: st.markdown(f"**🎭 {cam_n} objects**"); st.image(cam_output, use_container_width=True)
+                with c1: st.markdown("**📷 Original**"); st.image(pil_cam, width="stretch")
+                with c2: st.markdown(f"**🎭 {cam_n} objects**"); st.image(cam_output, width="stretch")
                 buf = BytesIO()
                 Image.fromarray(cam_output).save(buf, format="PNG")
-                st.download_button("⬇️ Download", buf.getvalue(), "photo_result.png", "image/png", use_container_width=True)
+                st.download_button("⬇️ Download", buf.getvalue(), "photo_result.png", "image/png", width="stretch")
                 st.markdown("---")
                 show_result_details(cam_results, cam_n, score_thr)
 
         else:
             st.markdown('<div class="local-box"><h3>🎥 Live Video Detection</h3></div>', unsafe_allow_html=True)
             col1, col2 = st.columns(2)
-            start_btn = col1.button("▶️ Start", type="primary", use_container_width=True)
-            stop_btn  = col2.button("⏹️ Stop", use_container_width=True)
+            start_btn = col1.button("▶️ Start", type="primary", width="stretch")
+            stop_btn  = col2.button("⏹️ Stop", width="stretch")
             if 'live_on' not in st.session_state: st.session_state.live_on = False
             if start_btn: st.session_state.live_on = True
             if stop_btn:  st.session_state.live_on = False
@@ -934,7 +934,7 @@ Browser mein `http://localhost:8501` → **Webcam → Live Video → ▶️ Star
                         out_f, nd = draw_results(pil_f, res, mask_thr=mask_thr,
                             show_masks=show_masks, show_boxes=show_boxes,
                             show_labels=show_labels, alpha=alpha)
-                        frame_ph.image(out_f, caption=f"Frame #{frame_count} — {nd} objects", use_container_width=True)
+                        frame_ph.image(out_f, caption=f"Frame #{frame_count} — {nd} objects", width="stretch")
                         detected = list(set([COCO_CLASSES.get(int(l),'?') for l in res['labels']]))
                         stats_ph.markdown(f"🎯 **{nd}** objects | ⚡ **{res['time']*1000:.0f}ms** | 🏷️ {', '.join(detected[:4]) or 'None'}")
                         frame_count += 1
@@ -948,7 +948,7 @@ Browser mein `http://localhost:8501` → **Webcam → Live Video → ▶️ Star
 if pil_image is not None:
     st.markdown("---")
     st.markdown("### 🔮 Step 2 — Run Detection")
-    if st.button("🚀 Run Mask R-CNN", type="primary", use_container_width=True):
+    if st.button("🚀 Run Mask R-CNN", type="primary", width="stretch"):
         with st.spinner("🧠 Model load ho raha hai..."): model = load_model()
         with st.spinner("⚡ Inference..."): results = run_inference(model, pil_image, score_thr)
         with st.spinner("🎨 Drawing..."):
@@ -957,13 +957,13 @@ if pil_image is not None:
         st.markdown("---")
         left, right = st.columns(2)
         with left:
-            st.markdown("**🖼️ Original Image**"); st.image(pil_image, use_container_width=True)
+            st.markdown("**🖼️ Original Image**"); st.image(pil_image, width="stretch")
         with right:
-            st.markdown(f"**🎭 Result — {n_det} instances**"); st.image(output_img, use_container_width=True)
+            st.markdown(f"**🎭 Result — {n_det} instances**"); st.image(output_img, width="stretch")
         buf = BytesIO()
         Image.fromarray(output_img).save(buf, format="PNG")
         st.download_button("⬇️ Download Result", buf.getvalue(),
-                           "mask_rcnn_output.png", "image/png", use_container_width=True)
+                           "mask_rcnn_output.png", "image/png", width="stretch")
         st.markdown("---")
         show_result_details(results, n_det, score_thr)
 
