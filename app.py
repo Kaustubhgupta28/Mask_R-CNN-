@@ -186,8 +186,8 @@ div[data-testid="stDataFrame"]{border:1px solid rgba(0,212,255,0.2) !important;b
 RUNNING_LOCAL = is_local()
 
 # ── Image Resize Helper — prevents RAM crash on cloud ─────────
-def resize_for_inference(pil_image, max_size=800):
-    """Resize large images before inference to prevent OOM crash."""
+def resize_for_inference(pil_image, max_size=640):
+    """Resize large images before inference to prevent OOM crash on cloud."""
     w, h = pil_image.size
     if max(w, h) > max_size:
         scale = max_size / max(w, h)
