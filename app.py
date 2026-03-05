@@ -631,11 +631,170 @@ tab1, tab2, tab3, tab4 = st.tabs([
 pil_image = None
 
 with tab1:
-    uploaded = st.file_uploader("JPG / PNG upload karo", type=["jpg","jpeg","png"])
+    uploaded = st.file_uploader(
+        "📁 Image ya Video upload karo",
+        type=["jpg", "jpeg", "png", "mp4", "avi", "mov", "mkv"]
+    )
+
     if uploaded:
-        pil_image = Image.open(uploaded).convert("RGB")
-        st.success(f"✅ {uploaded.name} ({pil_image.size[0]}×{pil_image.size[1]}px)")
-        st.image(pil_image, use_container_width=True)
+        file_type = uploaded.type  # e.g. "image/jpeg" or "video/mp4"
+
+        # ══════════════════════════════════════════
+        # IMAGE
+        # ══════════════════════════════════════════
+        if file_type.startswith("image"):
+            pil_image = Image.open(uploaded).convert("RGB")
+            st.success(f"✅ {uploaded.name} ({pil_image.size[0]}×{pil_image.size[1]}px)")
+            st.image(pil_image, use_container_width=True)
+
+        # ══════════════════════════════════════════
+        # VIDEO
+        # ══════════════════════════════════════════
+        elif file_type.startswith("video"):
+            st.success(f"✅ Video upload ho gayi: {uploaded.name}")
+            st.video(uploaded)
+
+            st.markdown("---")
+            st.markdown("### 🎬 Video Detection")
+            st.markdown("""
+<div class="info-box">
+⚠️ <b>Har frame pe detection hogi</b> — badi video ke liye time lagega.<br>
+Processing ke baad <b>output video download</b> kar sakte ho.
+</div>
+""", unsafe_allow_html=True)
+
+            if st.button("🚀 Start Video Detection", type="primary", use_container_width=True):
+
+                # ── Save uploaded video to temp file ──
+                import tempfile, time
+                tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+                tfile.write(uploaded.read())
+                tfile.flush()
+
+                # ── Load model ──
+                with st.spinner("🧠 Model load ho raha hai..."):
+                    model = load_model()
+
+                # ── Open video ──
+                cap = cv2.VideoCapture(tfile.name)
+                total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                fps          = cap.get(cv2.CAP_PROP_FPS) or 25
+                width        = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height       = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+                st.markdown(f"""
+<div class="metric-card" style="text-align:left; padding:14px 20px;">
+<span style="color:#64748b; font-size:0.85rem;">
+📹 <b style="color:#00d4ff;">{total_frames}</b> frames &nbsp;·&nbsp;
+🎞️ <b style="color:#00d4ff;">{fps:.1f}</b> FPS &nbsp;·&nbsp;
+📐 <b style="color:#00d4ff;">{width}×{height}</b>px
+</span>
+</div>
+""", unsafe_allow_html=True)
+
+                # ── Output video writer ──
+                out_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
+                fourcc   = cv2.VideoWriter_fourcc(*'mp4v')
+                writer   = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+
+                # ── Progress UI ──
+                progress_bar  = st.progress(0, text="⏳ Processing frames...")
+                preview_ph    = st.empty()
+                stats_ph      = st.empty()
+
+                frame_idx    = 0
+                total_det    = 0
+                all_classes  = {}
+                start_time   = time.time()
+
+                while True:
+                    ret, frame = cap.read()
+                    if not ret:
+                        break
+
+                    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    pil_f     = Image.fromarray(frame_rgb)
+
+                    # Run detection
+                    res         = run_inference(model, pil_f, score_thr)
+                    out_f, nd   = draw_results(
+                        pil_f, res,
+                        mask_thr=mask_thr, show_masks=show_masks,
+                        show_boxes=show_boxes, show_labels=show_labels, alpha=alpha
+                    )
+
+                    # Write to output video (BGR)
+                    out_bgr = cv2.cvtColor(out_f, cv2.COLOR_RGB2BGR)
+                    writer.write(out_bgr)
+
+                    # Stats
+                    total_det += nd
+                    for lbl in res['labels']:
+                        cname = COCO_CLASSES.get(int(lbl), '?')
+                        all_classes[cname] = all_classes.get(cname, 0) + 1
+
+                    frame_idx += 1
+                    progress   = frame_idx / max(total_frames, 1)
+                    elapsed    = time.time() - start_time
+                    eta        = (elapsed / frame_idx) * (total_frames - frame_idx) if frame_idx > 0 else 0
+
+                    progress_bar.progress(
+                        min(progress, 1.0),
+                        text=f"⏳ Frame {frame_idx}/{total_frames} — ETA: {eta:.0f}s"
+                    )
+
+                    # Show preview every 10 frames
+                    if frame_idx % 10 == 0:
+                        preview_ph.image(out_f,
+                            caption=f"🎬 Frame #{frame_idx} — {nd} objects detected",
+                            use_container_width=True)
+                        stats_ph.markdown(f"""
+| | |
+|---|---|
+| 🎯 Frame | **{frame_idx} / {total_frames}** |
+| 🔍 Detections (this frame) | **{nd}** |
+| 📊 Total detections so far | **{total_det}** |
+| ⏱️ Elapsed | **{elapsed:.1f}s** |
+| 🏷️ Classes seen | **{', '.join(list(all_classes.keys())[:5])}{'...' if len(all_classes) > 5 else ''}** |
+""")
+
+                cap.release()
+                writer.release()
+                progress_bar.progress(1.0, text="✅ Processing complete!")
+
+                # ── Summary cards ──
+                st.markdown("---")
+                st.markdown("### 📊 Video Detection Summary")
+                sc1, sc2, sc3 = st.columns(3)
+                sc1.markdown(f'<div class="metric-card"><div class="metric-val">{total_frames}</div><div class="metric-lbl">Total Frames</div></div>', unsafe_allow_html=True)
+                sc2.markdown(f'<div class="metric-card"><div class="metric-val">{total_det}</div><div class="metric-lbl">Total Detections</div></div>', unsafe_allow_html=True)
+                sc3.markdown(f'<div class="metric-card"><div class="metric-val">{total_det//max(total_frames,1)}</div><div class="metric-lbl">Avg per Frame</div></div>', unsafe_allow_html=True)
+
+                # ── Class summary table ──
+                if all_classes:
+                    st.markdown("#### 🏷️ Classes Detected")
+                    cls_df = pd.DataFrame(
+                        sorted(all_classes.items(), key=lambda x: -x[1]),
+                        columns=["Class", "Total Detections"]
+                    )
+                    st.dataframe(cls_df, use_container_width=True, hide_index=True)
+
+                # ── Download output video ──
+                st.markdown("---")
+                with open(out_path, "rb") as f:
+                    video_bytes = f.read()
+
+                st.download_button(
+                    label="⬇️ Download Output Video",
+                    data=video_bytes,
+                    file_name=f"mask_rcnn_{uploaded.name}",
+                    mime="video/mp4",
+                    use_container_width=True,
+                    type="primary"
+                )
+
+                # Cleanup
+                os.unlink(tfile.name)
 
 with tab2:
     url = st.text_input("Image URL paste karo:", placeholder="https://example.com/photo.jpg")
