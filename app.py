@@ -24,7 +24,8 @@ st.set_page_config(
 
 for key, val in [
     ('pil_image', None), ('result_img', None), ('results', None),
-    ('n_det', 0), ('live_on', False), ('camera_active', False)
+    ('n_det', 0), ('live_on', False), ('camera_active', False),
+    ('last_uploaded_name', None), ('last_uploaded_size', 0),
 ]:
     if key not in st.session_state:
         st.session_state[key] = val
@@ -279,6 +280,7 @@ with st.sidebar:
             st.session_state['result_img']=None
             st.session_state['results']=None
             st.session_state['n_det']=0
+            st.rerun()
     st.markdown("---")
     st.markdown("## 🖥️ System Info")
     st.markdown(f"**Device:** `{str(device).upper()}`")
@@ -302,8 +304,16 @@ with tab1:
     if uploaded:
         ftype=uploaded.type
         if ftype.startswith("image"):
-            img=Image.open(uploaded).convert("RGB")
-            set_image(img)
+            # Only reload image if it's a NEW file (different name or size)
+            file_changed = (
+                st.session_state['last_uploaded_name'] != uploaded.name or
+                st.session_state['last_uploaded_size'] != uploaded.size
+            )
+            if file_changed:
+                img=Image.open(uploaded).convert("RGB")
+                set_image(img)
+                st.session_state['last_uploaded_name'] = uploaded.name
+                st.session_state['last_uploaded_size'] = uploaded.size
             st.success(f"✅ {uploaded.name} loaded ({st.session_state['pil_image'].size[0]}×{st.session_state['pil_image'].size[1]}px) — Click **Run Mask R-CNN Detection** below!")
             st.image(st.session_state['pil_image'],width="stretch")
         elif ftype.startswith("video"):
@@ -327,7 +337,7 @@ with tab1:
 # ── Tab 2: URL ────────────────────────────────────────────────
 with tab2:
     st.markdown('<div class="info-box">💡 <b>Only direct file URLs are supported.</b><br>🖼️ Image: <code>.jpg .jpeg .png .webp</code> &nbsp;|&nbsp; 🎬 Video: <code>.mp4 .avi .mov .mkv</code><br>⚠️ YouTube, Bing, Google links are <b>not supported.</b></div>',unsafe_allow_html=True)
-    url=st.text_input("Paste a direct Image or Video URL:",placeholder="https://example.com/image.jpg")
+    url=st.text_input("Paste a direct Image or Video URL:",placeholder="https://example.com/image.jpg",key="url_input")
     if url:
         url_clean=url.lower().split("?")[0].split("#")[0]
         video_exts=(".mp4",".avi",".mov",".mkv",".webm",".mpeg")
@@ -348,15 +358,19 @@ with tab2:
             except Exception: is_image=True
         if is_image and not is_video:
             try:
-                with st.spinner("⬇️ Downloading image..."):
-                    r=requests.get(url,timeout=15,headers={"User-Agent":"Mozilla/5.0"})
-                    r.raise_for_status()
-                    ct=r.headers.get("Content-Type","").lower()
-                    if "text/html" in ct:
-                        st.error("❌ Server returned a webpage. Please use a direct image URL.")
-                        st.stop()
-                    img=Image.open(BytesIO(r.content)).convert("RGB")
-                set_image(img)
+                # Only re-download if URL changed
+                if st.session_state['last_uploaded_name'] != url:
+                    with st.spinner("⬇️ Downloading image..."):
+                        r=requests.get(url,timeout=15,headers={"User-Agent":"Mozilla/5.0"})
+                        r.raise_for_status()
+                        ct=r.headers.get("Content-Type","").lower()
+                        if "text/html" in ct:
+                            st.error("❌ Server returned a webpage. Please use a direct image URL.")
+                            st.stop()
+                        img=Image.open(BytesIO(r.content)).convert("RGB")
+                    set_image(img)
+                    st.session_state['last_uploaded_name'] = url
+                    st.session_state['last_uploaded_size'] = 0
                 st.success(f"✅ Downloaded! ({st.session_state['pil_image'].size[0]}×{st.session_state['pil_image'].size[1]}px) — Click **Run Mask R-CNN Detection** below!")
                 st.image(st.session_state['pil_image'],width="stretch")
             except Exception as e:
@@ -497,7 +511,7 @@ if pil_image is not None:
                 output_img,n_det=draw_results(pil_image,results,mask_thr=mask_thr,
                     show_masks=show_masks,show_boxes=show_boxes,
                     show_labels=show_labels,alpha=alpha)
-            st.session_state['result_img']=output_img
+            st.session_state['result_img']=output_img.copy()
             st.session_state['results']=results
             st.session_state['n_det']=n_det
             st.rerun()
