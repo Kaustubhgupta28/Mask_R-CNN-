@@ -2,7 +2,7 @@
 
 > Detects & segments objects in images, videos and webcam feed with pixel-perfect masks using ResNet-50 FPN backbone pretrained on MS-COCO 2017.
 
-🔗 **[Live Demo](https://kaustubhgupta28-mask-r-cnn-app.streamlit.app)** &nbsp;|&nbsp; ⭐ Star this repo if you find it useful!
+🔗 **[Live Demo](https://mask-rcnn-detection.streamlit.app)** &nbsp;|&nbsp; ⭐ Star this repo if you find it useful!
 
 ---
 
