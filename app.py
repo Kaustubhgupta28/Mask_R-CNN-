@@ -26,6 +26,7 @@ for key, val in [
     ('pil_image', None), ('result_img', None), ('results', None),
     ('n_det', 0), ('live_on', False), ('camera_active', False),
     ('last_uploaded_name', None), ('last_uploaded_size', 0),
+    ('last_settings', None),
 ]:
     if key not in st.session_state:
         st.session_state[key] = val
@@ -263,23 +264,35 @@ st.markdown("---")
 # ─────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("## ⚙️ Settings")
-    score_thr=st.slider("🎯 Confidence Threshold",0.10,0.95,0.30,0.05)
+    score_thr=st.slider("🎯 Confidence Threshold",0.10,0.95,0.30,0.05,key="score_thr")
     st.markdown('<div class="slider-desc"><b>How confident should the model be?</b><br>↑ Higher → Accurate, fewer detections<br>↓ Lower → More detections</div>',unsafe_allow_html=True)
-    mask_thr=st.slider("🎨 Mask Threshold",0.10,0.90,0.50,0.05)
+    mask_thr=st.slider("🎨 Mask Threshold",0.10,0.90,0.50,0.05,key="mask_thr")
     st.markdown('<div class="slider-desc"><b>How tight should the silhouette be?</b><br>↑ Higher → Sharp edges &nbsp;↓ Lower → Loose mask</div>',unsafe_allow_html=True)
-    alpha=st.slider("🌫️ Mask Transparency",0.10,0.90,0.45,0.05)
+    alpha=st.slider("🌫️ Mask Transparency",0.10,0.90,0.45,0.05,key="alpha")
     st.markdown('<div class="slider-desc"><b>Color overlay opacity:</b><br>↑ Higher → Opaque &nbsp;↓ Lower → Transparent</div>',unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("## 👁️ Display Options")
-    show_masks=st.checkbox("Show Masks",value=True)
-    show_boxes=st.checkbox("Show Bounding Boxes",value=True)
-    show_labels=st.checkbox("Show Labels",value=True)
+    show_masks=st.checkbox("Show Masks",value=True,key="show_masks")
+    show_boxes=st.checkbox("Show Bounding Boxes",value=True,key="show_boxes")
+    show_labels=st.checkbox("Show Labels",value=True,key="show_labels")
     st.markdown("---")
+
+    # Auto-detect if any setting changed since last detection — clear results so user must re-run
+    current_settings=(score_thr,mask_thr,alpha,show_masks,show_boxes,show_labels)
+    if 'last_settings' not in st.session_state:
+        st.session_state['last_settings']=current_settings
+    if st.session_state['last_settings']!=current_settings and st.session_state['result_img'] is not None:
+        st.session_state['result_img']=None
+        st.session_state['results']=None
+        st.session_state['n_det']=0
+        st.session_state['last_settings']=current_settings
+
     if st.session_state['pil_image'] is not None:
         if st.button("🔄 Re-run with New Settings",type="primary",width="stretch"):
             st.session_state['result_img']=None
             st.session_state['results']=None
             st.session_state['n_det']=0
+            st.session_state['last_settings']=current_settings
             st.rerun()
     st.markdown("---")
     st.markdown("## 🖥️ System Info")
