@@ -1,7 +1,7 @@
-# ═══════════════════════════════════════════════════════════════
+
 #  model.py — AI / ML Logic
 #  Mask R-CNN: Model load, Inference, Drawing, Constants
-# ═══════════════════════════════════════════════════════════════
+
 
 import os
 import torch
@@ -16,10 +16,10 @@ import streamlit as st
 # Suppress OpenCV camera warnings on cloud
 os.environ["OPENCV_LOG_LEVEL"] = "SILENT"
 
-# ── Device ────────────────────────────────────────────────────
+# ── Device 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# ── COCO Class Labels — 80 categories ────────────────────────
+# ── COCO Class Labels — 80 categories 
 COCO_CLASSES = {
     1:'person',        2:'bicycle',        3:'car',            4:'motorcycle',
     5:'airplane',      6:'bus',            7:'train',          8:'truck',
@@ -43,7 +43,7 @@ COCO_CLASSES = {
    87:'scissors',     88:'teddy bear',    89:'hair drier',    90:'toothbrush',
 }
 
-# ── Color Palette ─────────────────────────────────────────────
+# ── Color Palette 
 COLORS = [
     (255,  99,  99), ( 78, 205, 196), ( 69, 183, 209), (150, 206, 180),
     (255, 178, 102), (221, 160, 221), (152, 216, 200), (241, 148, 138),
@@ -52,7 +52,7 @@ COLORS = [
     (200, 150, 255), (255, 200, 100), (100, 255, 200), (255, 100, 200),
 ]
 
-# ── Sample Images ─────────────────────────────────────────────
+# ── Sample Images
 SAMPLE_IMAGES = {
     "🐱 Cats on a couch":  "http://images.cocodataset.org/val2017/000000039769.jpg",
     "🚗 Street scene":     "http://images.cocodataset.org/val2017/000000397133.jpg",
@@ -62,7 +62,7 @@ SAMPLE_IMAGES = {
     "🏀 Sports scene":     "http://images.cocodataset.org/val2017/000000174482.jpg",
 }
 
-# ── Load Model ────────────────────────────────────────────────
+# ── Load Model
 @st.cache_resource(show_spinner=False)
 def load_model():
     """
@@ -75,7 +75,7 @@ def load_model():
     m.eval()
     return m
 
-# ── Run Inference ─────────────────────────────────────────────
+# ── Run Inference 
 def run_inference(model, pil_image, score_threshold=0.5):
     """
     Run Mask R-CNN detection on a PIL image.
@@ -116,7 +116,7 @@ def run_inference(model, pil_image, score_threshold=0.5):
         'time':   elapsed,
     }
 
-# ── Draw Results ──────────────────────────────────────────────
+# ── Draw Results 
 def draw_results(pil_image, results,
                  mask_thr=0.5, show_masks=True,
                  show_boxes=True, show_labels=True, alpha=0.45):
@@ -169,7 +169,7 @@ def draw_results(pil_image, results,
     final = cv2.addWeighted(over, alpha+0.3, img, 1-(alpha+0.3), 0)
     return final, N
 
-# ── Local Check ───────────────────────────────────────────────
+# ── Local Check 
 def is_local():
     """
     Detect if running locally or on Streamlit Cloud.
